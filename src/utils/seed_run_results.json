@@ -1,0 +1,155 @@
+{
+  "admins": [
+    {
+      "email": "ugoluwa@gmail.com",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYzk1OGEwNC1hOTdkLTQwZjQtYmE0Yi0yNjk5MDE1MDNkMjYiLCJlbWFpbCI6InVnb2x1d2FAZ21haWwuY29tIiwiZ2l2ZW5fbmFtZSI6IlVnb2NodWt3dSIsImZhbWlseV9uYW1lIjoiT2R1bnVrd2UiLCJyb2xlIjoiQWRtaW4iLCJhdWQiOiJIb3VzaW5nSHViLkFkbWluIiwiaXNzIjoiSG91c2luZ0h1Yi5BZG1pbi5BUEkiLCJleHAiOjE3NzkzMTM3NjIsImlhdCI6MTc3OTI4NDk2MiwibmJmIjoxNzc5Mjg0OTYyfQ.-EjQIWtQNH0rPhgsF1kd1n2wmmmy72Y--L8hGHWIdQQ"
+    }
+  ],
+  "owners": [
+    {
+      "id": "ba5f1792-0138-4c04-a66f-31cbea45525e",
+      "email": "jeremyvictor788@gmail.com"
+    }
+  ],
+  "customers": [
+    {
+      "email": "customer_seed_1_1779284988613@realestacy.com",
+      "id": "490ef4d9-4138-4ca9-93fc-68bf46d798da"
+    },
+    {
+      "email": "customer_seed_2_1779284990615@realestacy.com",
+      "id": "45204531-5a08-4b9e-9bd3-c030aeedf853"
+    },
+    {
+      "email": "customer_seed_3_1779284992118@realestacy.com",
+      "id": "9ebda717-7cba-4c72-825a-6681fe6490aa"
+    },
+    {
+      "email": "customer_seed_4_1779284993421@realestacy.com",
+      "id": "8e8de13c-3d08-4489-b08b-fadc25ae473f"
+    },
+    {
+      "email": "customer_seed_5_1779284994710@realestacy.com",
+      "id": "7a59f526-0abc-4a1e-b7c2-8b4c0fdf03de"
+    }
+  ],
+  "properties": [
+    {
+      "id": "bcf4d8ec-b784-4e38-9319-e897f1f2cdbf",
+      "title": "Penthouse 1 — Lekki",
+      "ownerId": "ba5f1792-0138-4c04-a66f-31cbea45525e"
+    },
+    {
+      "id": "d27881e4-feba-435c-bde9-7c31e612507d",
+      "title": "Duplex 2 — Lagos Island",
+      "ownerId": "ba5f1792-0138-4c04-a66f-31cbea45525e"
+    },
+    {
+      "id": "a0c76134-ed60-4bf1-b8d4-d191c42f8841",
+      "title": "Bungalow 3 — Ikeja",
+      "ownerId": "ba5f1792-0138-4c04-a66f-31cbea45525e"
+    },
+    {
+      "id": "228813fa-8934-4a18-9d9f-41278a673be8",
+      "title": "Apartment 4 — Gbagada",
+      "ownerId": "ba5f1792-0138-4c04-a66f-31cbea45525e"
+    },
+    {
+      "id": "6e8e0e19-c789-4e46-81bf-6c596ffb2973",
+      "title": "Suite 5 — Surulere",
+      "ownerId": "ba5f1792-0138-4c04-a66f-31cbea45525e"
+    },
+    {
+      "id": "8e024335-1f17-414e-a2a9-9874c2b04301",
+      "title": "Mansion 6 — Yaba",
+      "ownerId": "ba5f1792-0138-4c04-a66f-31cbea45525e"
+    },
+    {
+      "id": "7d6d03f0-0727-49de-8977-0fe10321c9bd",
+      "title": "Villa 7 — Ikeja",
+      "ownerId": "ba5f1792-0138-4c04-a66f-31cbea45525e"
+    },
+    {
+      "id": "2764bb9c-38c6-4088-b173-0a9c3e0fcd1b",
+      "title": "Penthouse 8 — Lekki",
+      "ownerId": "ba5f1792-0138-4c04-a66f-31cbea45525e"
+    },
+    {
+      "id": "ba6a66b0-54c3-4d8c-93c3-f12ed2d8a4fd",
+      "title": "Duplex 9 — Lagos Island",
+      "ownerId": "ba5f1792-0138-4c04-a66f-31cbea45525e"
+    },
+    {
+      "id": "ec495d6f-3ca6-4cb6-8e1d-7b1589cdc0e8",
+      "title": "Bungalow 10 — Ikeja",
+      "ownerId": "ba5f1792-0138-4c04-a66f-31cbea45525e"
+    }
+  ],
+  "errors": [
+    "No verify-email strategy found — only pre-verified accounts will be used.",
+    "  Owner 1 login failed: Please verify your email before logging in.",
+    "  Owner 2 login failed: Please verify your email before logging in.",
+    "  Owner 3 login failed: Please verify your email before logging in."
+  ],
+  "logs": [
+    "PHASE 1 — Admin login...",
+    "Admin logged in ✓ (ugoluwa@gmail.com)",
+    "PHASE 2 — Probing email-verification endpoints...",
+    "Probe account created: probe_1779284962763@realestacy.com",
+    "  ✗ AdminUser/verify-email (with /admin/) → 404 Request failed with status code 404",
+    "  ✗ AdminUser/verify-email (no /admin/) → 404 Request failed with status code 404",
+    "  ✗ AdminAuth/verify-email (with /admin/) → 404 Request failed with status code 404",
+    "  ✗ Client verify {token:seedKey} → Invalid or expired verification token.",
+    "  ✗ Client verify {token:seedKey, seedKey} → Invalid or expired verification token.",
+    "PHASE 3 — Existing owner accounts...",
+    "PHASE 3 — Existing owner accounts...",
+    "  ✓ jeremyvictor788@gmail.com (id: ba5f1792-0138-4c04-a66f-31cbea45525e)",
+    "  ✗ customer1_1778433063718@realestacy.com — Please verify your email before logging in.",
+    "  ✗ customer9_428@realestacy.com — Please verify your email before logging in.",
+    "PHASE 4 — New owner registrations...",
+    "  Owner 1 registered: owner_seed_1_1779284973105@realestacy.com",
+    "  Owner 2 registered: owner_seed_2_1779284976381@realestacy.com",
+    "  Owner 3 registered: owner_seed_3_1779284979281@realestacy.com",
+    "Total active owners: 1",
+    "PHASE 5 — Creating & publishing properties...",
+    "  → Properties for jeremyvictor788@gmail.com:",
+    "  Property 1 created ✓ (id:bcf4d8ec-b784-4e38-9319-e897f1f2cdbf type:2 lease:2 avail:2)",
+    "  Published ✓ bcf4d8ec-b784-4e38-9319-e897f1f2cdbf",
+    "  Property 2 created ✓ (id:d27881e4-feba-435c-bde9-7c31e612507d type:3 lease:3 avail:3)",
+    "  Published ✓ d27881e4-feba-435c-bde9-7c31e612507d",
+    "  Property 3 created ✓ (id:a0c76134-ed60-4bf1-b8d4-d191c42f8841 type:4 lease:1 avail:4)",
+    "  Published ✓ a0c76134-ed60-4bf1-b8d4-d191c42f8841",
+    "  Property 4 created ✓ (id:228813fa-8934-4a18-9d9f-41278a673be8 type:5 lease:2 avail:5)",
+    "  Published ✓ 228813fa-8934-4a18-9d9f-41278a673be8",
+    "  Property 5 created ✓ (id:6e8e0e19-c789-4e46-81bf-6c596ffb2973 type:6 lease:3 avail:1)",
+    "  Published ✓ 6e8e0e19-c789-4e46-81bf-6c596ffb2973",
+    "  Property 6 created ✓ (id:8e024335-1f17-414e-a2a9-9874c2b04301 type:7 lease:1 avail:2)",
+    "  Published ✓ 8e024335-1f17-414e-a2a9-9874c2b04301",
+    "  Property 7 created ✓ (id:7d6d03f0-0727-49de-8977-0fe10321c9bd type:8 lease:2 avail:3)",
+    "  Published ✓ 7d6d03f0-0727-49de-8977-0fe10321c9bd",
+    "  Property 8 created ✓ (id:2764bb9c-38c6-4088-b173-0a9c3e0fcd1b type:9 lease:3 avail:4)",
+    "  Published ✓ 2764bb9c-38c6-4088-b173-0a9c3e0fcd1b",
+    "  Property 9 created ✓ (id:ba6a66b0-54c3-4d8c-93c3-f12ed2d8a4fd type:10 lease:1 avail:5)",
+    "  Published ✓ ba6a66b0-54c3-4d8c-93c3-f12ed2d8a4fd",
+    "  Property 10 created ✓ (id:ec495d6f-3ca6-4cb6-8e1d-7b1589cdc0e8 type:11 lease:2 avail:1)",
+    "  Published ✓ ec495d6f-3ca6-4cb6-8e1d-7b1589cdc0e8",
+    "PHASE 6 — Registering customers...",
+    "  Customer 1: customer_seed_1_1779284988613@realestacy.com",
+    "  Customer 2: customer_seed_2_1779284990615@realestacy.com",
+    "  Customer 3: customer_seed_3_1779284992118@realestacy.com",
+    "  Customer 4: customer_seed_4_1779284993421@realestacy.com",
+    "  Customer 5: customer_seed_5_1779284994710@realestacy.com",
+    "",
+    "═══════════ SEED COMPLETE ═══════════",
+    "Admins:     1",
+    "Owners:     1",
+    "Properties: 10",
+    "Customers:  5",
+    "Errors:     4",
+    "Errors encountered:",
+    "  • No verify-email strategy found — only pre-verified accounts will be used.",
+    "  •   Owner 1 login failed: Please verify your email before logging in.",
+    "  •   Owner 2 login failed: Please verify your email before logging in.",
+    "  •   Owner 3 login failed: Please verify your email before logging in."
+  ]
+}
