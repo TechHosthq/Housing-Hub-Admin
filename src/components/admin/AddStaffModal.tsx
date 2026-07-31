@@ -6,27 +6,20 @@ import { useState } from "react";
 interface AddStaffModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAdd: (staff: any) => void;
+    onAdd: (staff: { firstName: string; lastName: string; email: string }) => void;
 }
 
+const EMPTY_FORM = { firstName: "", lastName: "", email: "" };
+
 export default function AddStaffModal({ isOpen, onClose, onAdd }: AddStaffModalProps) {
-    const [formData, setFormData] = useState({
-        firstName: "Priscian",
-        lastName: "Priscian",
-        email: "Priscian",
-        phone: "Priscian",
-        role: "Inspectior"
-    });
+    const [formData, setFormData] = useState(EMPTY_FORM);
 
     if (!isOpen) return null;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onAdd({
-            ...formData,
-            id: Date.now(),
-            status: "Active"
-        });
+        onAdd(formData);
+        setFormData(EMPTY_FORM);
         onClose();
     };
 
@@ -52,12 +45,17 @@ export default function AddStaffModal({ isOpen, onClose, onAdd }: AddStaffModalP
                     </button>
                 </div>
 
+                <p className="text-[14px] text-gray-400 -mt-4">
+                    The new staff member logs in with a one-time code sent to their email — no password to set here.
+                </p>
+
                 <form onSubmit={handleSubmit} className="flex flex-col gap-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="flex flex-col gap-3">
                             <label className="text-[14px] font-medium text-gray-400">First Name</label>
                             <input
                                 type="text"
+                                required
                                 value={formData.firstName}
                                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                                 className="w-full px-6 py-4 bg-white border border-gray-100 rounded-[20px] text-[15px] font-medium text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all font-montserrat"
@@ -68,6 +66,7 @@ export default function AddStaffModal({ isOpen, onClose, onAdd }: AddStaffModalP
                             <label className="text-[14px] font-medium text-gray-400">Last Name</label>
                             <input
                                 type="text"
+                                required
                                 value={formData.lastName}
                                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                                 className="w-full px-6 py-4 bg-white border border-gray-100 rounded-[20px] text-[15px] font-medium text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all font-montserrat"
@@ -80,42 +79,12 @@ export default function AddStaffModal({ isOpen, onClose, onAdd }: AddStaffModalP
                         <label className="text-[14px] font-medium text-gray-400">Email Address</label>
                         <input
                             type="email"
+                            required
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             className="w-full px-6 py-4 bg-white border border-gray-100 rounded-[20px] text-[15px] font-medium text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all font-montserrat"
                             placeholder="Enter email address"
                         />
-                    </div>
-
-                    <div className="flex flex-col gap-3">
-                        <label className="text-[14px] font-medium text-gray-400">Phone Number</label>
-                        <input
-                            type="text"
-                            value={formData.phone}
-                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                            className="w-full px-6 py-4 bg-white border border-gray-100 rounded-[20px] text-[15px] font-medium text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all font-montserrat"
-                            placeholder="Enter phone number"
-                        />
-                    </div>
-
-                    <div className="flex flex-col gap-3">
-                        <label className="text-[14px] font-medium text-gray-400">Role</label>
-                        <div className="relative">
-                            <select
-                                value={formData.role}
-                                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                className="w-full px-6 py-4 bg-white border border-gray-100 rounded-[20px] text-[15px] font-medium text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all appearance-none cursor-pointer font-montserrat"
-                            >
-                                <option value="Inspectior">Inspectior</option>
-                                <option value="Manager">Manager</option>
-                                <option value="Support">Support</option>
-                            </select>
-                            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                                <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
-                                    <path d="M1 1L6 6L11 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                            </div>
-                        </div>
                     </div>
 
                     <div className="flex items-center justify-end gap-4 mt-4">

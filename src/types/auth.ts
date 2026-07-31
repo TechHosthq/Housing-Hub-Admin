@@ -32,11 +32,6 @@ export interface AuthData extends User {
     token: string | null;
 }
 
-export interface LoginRequest {
-    email: string | null;
-    password: string | null;
-}
-
 // Admin API returns a flat response (not wrapped in ApiResponse)
 export interface AdminLoginData {
     token: string;
@@ -46,7 +41,18 @@ export interface AdminLoginData {
     id?: string | null;
 }
 
-export type LoginResponse = AdminLoginData;
+export interface RequestOtpRequest {
+    email: string | null;
+}
+
+export type RequestOtpResponse = { message: string };
+
+export interface VerifyOtpRequest {
+    email: string | null;
+    code: string | null;
+}
+
+export type VerifyOtpResponse = AdminLoginData;
 
 export interface RegisterRequest {
     firstName: string | null;

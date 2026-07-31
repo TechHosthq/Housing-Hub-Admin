@@ -40,13 +40,12 @@ export const adminAccountService = {
         return response.data;
     },
 
-    createStaff: async (data: { 
-        firstName: string | null; 
-        lastName: string | null; 
-        email: string | null; 
-        password: string | null; 
+    createStaff: async (data: {
+        firstName: string | null;
+        lastName: string | null;
+        email: string | null;
     }): Promise<ApiResponse<StaffMember>> => {
-        const response = await apiClient.post('/api/AdminAuth/create', data);
+        const response = await apiClient.post('/api/AdminAccount/staff', data);
         return response.data;
     },
 

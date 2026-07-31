@@ -23,7 +23,7 @@ export const useOwner = () => {
     });
 
     const verifyKycMutation = useMutation({
-        mutationFn: ({ id, approve }: { id: string, approve: boolean }) => ownerService.verifyKyc(id, approve),
+        mutationFn: ({ id, approve, reason }: { id: string, approve: boolean, reason?: string }) => ownerService.verifyKyc(id, approve, reason),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ['owner', variables.id] });
             queryClient.invalidateQueries({ queryKey: ['owners'] });
