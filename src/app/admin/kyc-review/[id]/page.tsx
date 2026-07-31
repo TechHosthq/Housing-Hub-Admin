@@ -39,7 +39,7 @@ export default function KYCReviewPage() {
     }, [customer]);
 
     const handleReject = (reason: string) => {
-        verifyKyc({ id, approve: false }, {
+        verifyKyc({ id, approve: false, reason }, {
             onSuccess: () => {
                 setStatus("Rejected");
                 setIsRejectModalOpen(false);

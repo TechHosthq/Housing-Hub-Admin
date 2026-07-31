@@ -59,8 +59,10 @@ const customerService = {
         return response.data;
     },
 
-    verifyKyc: async (id: string, approve: boolean): Promise<KycResponse> => {
-        const response = await apiClient.put(`/api/AdminCustomer/${id}/kyc/verify?approve=${approve}`);
+    verifyKyc: async (id: string, approve: boolean, reason?: string): Promise<KycResponse> => {
+        const params = new URLSearchParams({ approve: String(approve) });
+        if (reason) params.set('reason', reason);
+        const response = await apiClient.put(`/api/AdminCustomer/${id}/kyc/verify?${params.toString()}`);
         return response.data;
     },
 

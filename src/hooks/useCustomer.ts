@@ -53,7 +53,7 @@ export const useCustomer = () => {
     });
 
     const verifyKycMutation = useMutation({
-        mutationFn: ({ id, approve }: { id: string, approve: boolean }) => customerService.verifyKyc(id, approve),
+        mutationFn: ({ id, approve, reason }: { id: string, approve: boolean, reason?: string }) => customerService.verifyKyc(id, approve, reason),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ['customer', variables.id] });
             queryClient.invalidateQueries({ queryKey: ['customers'] });
