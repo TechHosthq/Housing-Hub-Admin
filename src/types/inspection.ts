@@ -3,10 +3,10 @@ import { ApiResponse } from "./auth";
 export enum InspectionStatus {
     Pending = 0,
     Confirmed = 1,
-    Cancelled = 2,
-    Completed = 3,
-    Declined = 4,
-    RescheduleRequested = 5
+    Declined = 2,
+    RescheduleRequested = 3,
+    Completed = 4,
+    Cancelled = 5
 }
 
 export interface Inspection {
