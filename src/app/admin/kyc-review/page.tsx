@@ -50,15 +50,15 @@ export default function AdminKYCReviewPage() {
     const filteredCustomers = debouncedSearch
         ? pendingCustomers.filter(c =>
             `${c.firstName} ${c.lastName}`.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-            c.email.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-            c.phoneNumber.toLowerCase().includes(debouncedSearch.toLowerCase())
+            (c.email ?? "").toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+            (c.phoneNumber ?? "").toLowerCase().includes(debouncedSearch.toLowerCase())
           )
         : pendingCustomers;
 
     const filteredOwners = debouncedSearch
         ? pendingOwners.filter(o =>
             `${o.firstName} ${o.lastName}`.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-            o.email.toLowerCase().includes(debouncedSearch.toLowerCase())
+            (o.email ?? "").toLowerCase().includes(debouncedSearch.toLowerCase())
           )
         : pendingOwners;
 
