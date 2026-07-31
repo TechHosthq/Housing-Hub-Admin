@@ -140,7 +140,7 @@ export default function AdminSettingsPage() {
     });
 
     const createStaffMutation = useMutation({
-        mutationFn: (data: { firstName: string | null; lastName: string | null; email: string | null; password: string | null }) =>
+        mutationFn: (data: { firstName: string | null; lastName: string | null; email: string | null }) =>
             adminAccountService.createStaff(data),
         onSuccess: () => {
             refetchStaff();
@@ -175,7 +175,6 @@ export default function AdminSettingsPage() {
             firstName: newStaff.firstName,
             lastName: newStaff.lastName,
             email: newStaff.email,
-            password: "Password123!",
         });
     };
 
