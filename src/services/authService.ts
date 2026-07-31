@@ -1,8 +1,10 @@
 import apiClient from './apiClient';
-import { 
-    LoginRequest, 
-    LoginResponse, 
-    RegisterRequest, 
+import {
+    RequestOtpRequest,
+    RequestOtpResponse,
+    VerifyOtpRequest,
+    VerifyOtpResponse,
+    RegisterRequest,
     RegisterResponse, 
     VerifyEmailRequest, 
     VerifyEmailResponse,
@@ -22,8 +24,13 @@ const authService = {
         return response.data;
     },
 
-    login: async (data: LoginRequest): Promise<LoginResponse> => {
-        const response = await apiClient.post('/api/AdminAuth/login', data);
+    requestOtp: async (data: RequestOtpRequest): Promise<RequestOtpResponse> => {
+        const response = await apiClient.post('/api/AdminAuth/otp/request', data);
+        return response.data;
+    },
+
+    verifyOtp: async (data: VerifyOtpRequest): Promise<VerifyOtpResponse> => {
+        const response = await apiClient.post('/api/AdminAuth/otp/verify', data);
         return response.data;
     },
 

@@ -3,9 +3,10 @@ import authService from '@/services/authService';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useToastStore } from '@/store/useToastStore';
 import { resolveApiError } from '@/utils/errorResolver';
-import { 
-    LoginRequest, 
-    RegisterRequest, 
+import {
+    RequestOtpRequest,
+    VerifyOtpRequest,
+    RegisterRequest,
     ForgotPasswordRequest, 
     ResetPasswordRequest, 
     VerifyEmailRequest,
@@ -16,8 +17,12 @@ export const useAuth = () => {
     const setAuth = useAuthStore((state) => state.setAuth);
     const clearAuth = useAuthStore((state) => state.clearAuth);
 
-    const loginMutation = useMutation({
-        mutationFn: (data: LoginRequest) => authService.login(data),
+    const requestOtpMutation = useMutation({
+        mutationFn: (data: RequestOtpRequest) => authService.requestOtp(data),
+    });
+
+    const verifyOtpMutation = useMutation({
+        mutationFn: (data: VerifyOtpRequest) => authService.verifyOtp(data),
         onSuccess: (response) => {
             // Admin API returns a flat response: { token, email, firstName, lastName, ... }
             // (not the wrapped ApiResponse<AuthData> shape)
@@ -56,10 +61,15 @@ export const useAuth = () => {
     return {
         user: useAuthStore((state) => state.user),
         isAuthenticated: useAuthStore((state) => state.isAuthenticated),
-        login: loginMutation.mutate,
-        isLoggingIn: loginMutation.isPending,
-        loginError: loginMutation.error,
-        
+        requestOtp: requestOtpMutation.mutate,
+        isRequestingOtp: requestOtpMutation.isPending,
+        requestOtpError: requestOtpMutation.error,
+        requestOtpSuccess: requestOtpMutation.isSuccess,
+
+        verifyOtp: verifyOtpMutation.mutate,
+        isVerifyingOtp: verifyOtpMutation.isPending,
+        verifyOtpError: verifyOtpMutation.error,
+
         register: registerMutation.mutate,
         isRegistering: registerMutation.isPending,
         registerError: registerMutation.error,
