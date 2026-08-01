@@ -45,3 +45,12 @@ h6 {
 .animate-toast-in {
   animation: slide-in-from-right 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+button:not(:disabled),
+[role="button"]:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
