@@ -28,8 +28,8 @@ export const useAuth = () => {
             // (not the wrapped ApiResponse<AuthData> shape)
             const token = response?.token;
             if (token) {
-                const { token: _tok, ...user } = response;
-                setAuth(user as any, token);
+                const { token: _tok, refreshToken, ...user } = response;
+                setAuth(user as any, token, refreshToken);
             }
         },
     });

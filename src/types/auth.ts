@@ -39,6 +39,7 @@ export interface AdminLoginData {
     firstName: string | null;
     lastName: string | null;
     id?: string | null;
+    refreshToken?: string | null;
 }
 
 export interface RequestOtpRequest {
@@ -53,6 +54,13 @@ export interface VerifyOtpRequest {
 }
 
 export type VerifyOtpResponse = AdminLoginData;
+
+export interface RefreshTokenRequest {
+    refreshToken: string;
+}
+
+// Admin API returns a flat response (not wrapped in ApiResponse)
+export type RefreshTokenResponse = AdminLoginData;
 
 export interface RegisterRequest {
     firstName: string | null;

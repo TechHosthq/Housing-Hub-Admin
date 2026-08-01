@@ -15,7 +15,9 @@ import {
     ChangePasswordRequest,
     ChangePasswordResponse,
     GoogleAuthRequest,
-    GoogleAuthResponse
+    GoogleAuthResponse,
+    RefreshTokenRequest,
+    RefreshTokenResponse
 } from '@/types/auth';
 
 const authService = {
@@ -67,6 +69,15 @@ const authService = {
 
     handleGoogleCallback: async (code: string): Promise<GoogleAuthResponse> => {
         const response = await apiClient.get(`/api/AdminAuth/google-callback?code=${code}`);
+        return response.data;
+    },
+
+    /**
+     * Exchanges a refresh token for a new access token + rotated refresh token.
+     * Called by apiClient's response interceptor on a 401, not directly by UI code.
+     */
+    refreshToken: async (data: RefreshTokenRequest): Promise<RefreshTokenResponse> => {
+        const response = await apiClient.post('/api/AdminAuth/refresh-token', data);
         return response.data;
     }
 };
