@@ -11,6 +11,7 @@ import { useProperty } from "@/hooks/useProperty";
 import { format } from "date-fns";
 import Link from "next/link";
 import { PropertyType, AvailabilityStatus, PropertyLeaseType } from "@/types/property";
+import { decodePropertyFeatures } from "@/lib/propertyFeatures";
 
 const propertyTypeLabels: Record<PropertyType, string> = {
     [PropertyType.House]: "House",
@@ -134,6 +135,7 @@ export default function PropertyInformationPage() {
         : "N/A";
 
     const formattedPrice = property.price !== undefined ? `₦ ${property.price.toLocaleString()}` : "₦ 0";
+    const featureLabels = decodePropertyFeatures(property.features);
 
     return (
         <div className="flex flex-col gap-8 pb-12">
@@ -223,7 +225,20 @@ export default function PropertyInformationPage() {
                     </div>
                     <div className="flex justify-between items-start pb-4 border-b border-gray-50">
                         <span className="text-[12px] font-black text-[#B3B3B3] uppercase tracking-wider">Features</span>
-                        <span className="text-[14px] font-bold text-[#1A1A1A]">Features ID: {property.features}</span>
+                        {featureLabels.length > 0 ? (
+                            <div className="flex flex-wrap gap-2 justify-end max-w-[60%]">
+                                {featureLabels.map((label) => (
+                                    <span
+                                        key={label}
+                                        className="text-[12px] font-bold text-[#0095FF] bg-blue-50 px-3 py-1 rounded-full"
+                                    >
+                                        {label}
+                                    </span>
+                                ))}
+                            </div>
+                        ) : (
+                            <span className="text-[14px] font-bold text-[#1A1A1A]">None listed</span>
+                        )}
                     </div>
                 </div>
             </div>
