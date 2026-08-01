@@ -64,6 +64,7 @@ export interface PropertyDetail {
     propertyAddress?: PropertyAddress;
     isPublished?: boolean;
     publishedAt?: string | null;
+    isVerified?: boolean;
     ownerName?: string | null;
     address?: string | null;
     datePosted?: string;

@@ -103,6 +103,22 @@ export const useProperty = () => {
         }
     });
 
+    const verifyPropertyMutation = useMutation({
+        mutationFn: (id: string) => propertyService.verifyProperty(id),
+        onSuccess: (_, id) => {
+            queryClient.invalidateQueries({ queryKey: ['property', id] });
+            queryClient.invalidateQueries({ queryKey: ['properties'] });
+        }
+    });
+
+    const unverifyPropertyMutation = useMutation({
+        mutationFn: (id: string) => propertyService.unverifyProperty(id),
+        onSuccess: (_, id) => {
+            queryClient.invalidateQueries({ queryKey: ['property', id] });
+            queryClient.invalidateQueries({ queryKey: ['properties'] });
+        }
+    });
+
     const uploadFilesMutation = useMutation({
         mutationFn: ({ id, files }: { id: string, files: File[] }) => 
             propertyService.uploadPropertyFiles(id, files),
@@ -131,6 +147,10 @@ export const useProperty = () => {
         isPublishing: publishPropertyMutation.isPending,
         unpublishProperty: unpublishPropertyMutation.mutate,
         isUnpublishing: unpublishPropertyMutation.isPending,
+        verifyProperty: verifyPropertyMutation.mutate,
+        isVerifying: verifyPropertyMutation.isPending,
+        unverifyProperty: unverifyPropertyMutation.mutate,
+        isUnverifying: unverifyPropertyMutation.isPending,
         uploadFiles: uploadFilesMutation.mutate,
         isUploading: uploadFilesMutation.isPending,
     };

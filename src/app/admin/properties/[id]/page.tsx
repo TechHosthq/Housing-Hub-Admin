@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ChevronLeft, Calendar, Loader2, ArrowRight } from "lucide-react";
+import { ChevronLeft, Calendar, Loader2, ArrowRight, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
 import Image from "next/image";
 import SuccessModal from "@/components/admin/SuccessModal";
+import DeletePropertyModal from "@/components/admin/DeletePropertyModal";
 import { useInspection } from "@/hooks/useInspection";
 import { useProperty } from "@/hooks/useProperty";
 import { format } from "date-fns";
@@ -36,9 +37,15 @@ export default function PropertyInformationPage() {
     const id = params.id as string;
 
     const [showSuccess, setShowSuccess] = useState(false);
+    const [successTitle, setSuccessTitle] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const { usePropertyInspections } = useInspection();
-    const { useGetProperty, publishProperty, isPublishing, unpublishProperty, isUnpublishing } = useProperty();
+    const {
+        useGetProperty, publishProperty, isPublishing, unpublishProperty, isUnpublishing,
+        verifyProperty, isVerifying, unverifyProperty, isUnverifying, deleteProperty, isDeleting,
+    } = useProperty();
 
     const { data: propertyResponse, isLoading: isLoadingProperty } = useGetProperty(id);
     const { data: inspectionsResponse, isLoading: isLoadingInspections } = usePropertyInspections(id);
@@ -60,17 +67,22 @@ export default function PropertyInformationPage() {
 
     const isPublished = property.isPublished || false;
     const currentStatus = isPublished ? "Published" : "Posted";
-    
+    const isVerified = property.isVerified || false;
+
     const handleToggleStatus = () => {
         if (isPublished) {
             unpublishProperty(id, {
                 onSuccess: () => {
+                    setSuccessTitle("Property Unpublished");
+                    setSuccessMessage("The property has been successfully unpublished.");
                     setShowSuccess(true);
                 }
             });
         } else {
             publishProperty(id, {
                 onSuccess: () => {
+                    setSuccessTitle("Property Published");
+                    setSuccessMessage("The property has been successfully published.");
                     setShowSuccess(true);
                     setTimeout(() => {
                         router.push("/admin/properties");
@@ -78,6 +90,34 @@ export default function PropertyInformationPage() {
                 }
             });
         }
+    };
+
+    const handleToggleVerified = () => {
+        if (isVerified) {
+            unverifyProperty(id, {
+                onSuccess: () => {
+                    setSuccessTitle("Property Unverified");
+                    setSuccessMessage("The property has been marked as unverified.");
+                    setShowSuccess(true);
+                }
+            });
+        } else {
+            verifyProperty(id, {
+                onSuccess: () => {
+                    setSuccessTitle("Property Verified");
+                    setSuccessMessage("The property has been successfully verified.");
+                    setShowSuccess(true);
+                }
+            });
+        }
+    };
+
+    const handleDelete = () => {
+        deleteProperty(id, {
+            onSuccess: () => {
+                router.push("/admin/properties");
+            }
+        });
     };
 
     const propertyImage = property.files?.[0]?.fileUrl || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=600";
@@ -130,6 +170,12 @@ export default function PropertyInformationPage() {
                             : "bg-green-50 text-green-500"
                             }`}>
                             {currentStatus}
+                        </span>
+                        <span className={`text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-wider ${isVerified
+                            ? "bg-blue-50 text-[#0095FF]"
+                            : "bg-gray-100 text-gray-400"
+                            }`}>
+                            {isVerified ? "Verified" : "Unverified"}
                         </span>
                     </div>
                     <p className="text-[17px] font-medium text-[#999999] mb-1">
@@ -268,20 +314,52 @@ export default function PropertyInformationPage() {
                 )}
             </div>
 
-            <button
-                onClick={handleToggleStatus}
-                disabled={isPublishing || isUnpublishing}
-                className="w-full py-5 bg-[#002B7F] text-white rounded-[16px] font-bold text-[16px] hover:bg-opacity-90 transition-all shadow-md mt-4 flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-                {(isPublishing || isUnpublishing) && <Loader2 className="animate-spin" size={20} />}
-                {isPublished ? "Unpublish Property" : "Publish Property"}
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                <button
+                    onClick={handleToggleStatus}
+                    disabled={isPublishing || isUnpublishing}
+                    className="flex-1 py-5 bg-[#002B7F] text-white rounded-[16px] font-bold text-[16px] hover:bg-opacity-90 transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                    {(isPublishing || isUnpublishing) && <Loader2 className="animate-spin" size={20} />}
+                    {isPublished ? "Unpublish Property" : "Publish Property"}
+                </button>
+
+                <button
+                    onClick={handleToggleVerified}
+                    disabled={isVerifying || isUnverifying}
+                    className="flex-1 py-5 border-2 border-[#0095FF] text-[#0095FF] rounded-[16px] font-bold text-[16px] hover:bg-blue-50 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                    {(isVerifying || isUnverifying) ? (
+                        <Loader2 className="animate-spin" size={20} />
+                    ) : isVerified ? (
+                        <ShieldOff size={20} />
+                    ) : (
+                        <ShieldCheck size={20} />
+                    )}
+                    {isVerified ? "Unverify Property" : "Verify Property"}
+                </button>
+
+                <button
+                    onClick={() => setShowDeleteModal(true)}
+                    disabled={isDeleting}
+                    className="flex-1 py-5 border-2 border-[#FF3B30] text-[#FF3B30] rounded-[16px] font-bold text-[16px] hover:bg-red-50 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                    {isDeleting ? <Loader2 className="animate-spin" size={20} /> : <Trash2 size={20} />}
+                    Delete Property
+                </button>
+            </div>
+
+            <DeletePropertyModal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onDelete={handleDelete}
+            />
 
             <SuccessModal
                 isOpen={showSuccess}
                 onClose={() => setShowSuccess(false)}
-                title={isPublished ? "Property Unpublished" : "Property Published"}
-                message={`The property has been successfully ${isPublished ? "unpublished" : "published"}.`}
+                title={successTitle}
+                message={successMessage}
             />
         </div>
     );

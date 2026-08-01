@@ -84,6 +84,16 @@ export const propertyService = {
         return response.data;
     },
 
+    verifyProperty: async (id: string): Promise<ApiResponse<boolean>> => {
+        const response = await apiClient.put<ApiResponse<boolean>>(`/api/AdminProperty/${id}/verify`);
+        return response.data;
+    },
+
+    unverifyProperty: async (id: string): Promise<ApiResponse<boolean>> => {
+        const response = await apiClient.put<ApiResponse<boolean>>(`/api/AdminProperty/${id}/unverify`);
+        return response.data;
+    },
+
     getMyProperties: async (): Promise<ApiResponse<PropertyDetail[]>> => {
         const response = await apiClient.get<ApiResponse<PropertyDetail[]>>('/api/AdminProperty/my');
         return response.data;

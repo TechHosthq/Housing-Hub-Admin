@@ -28,10 +28,6 @@ export interface PaginatedResponse<T> {
     hasNextPage: boolean;
 }
 
-export interface AuthData extends User {
-    token: string | null;
-}
-
 // Admin API returns a flat response (not wrapped in ApiResponse)
 export interface AdminLoginData {
     token: string;
@@ -39,6 +35,7 @@ export interface AdminLoginData {
     firstName: string | null;
     lastName: string | null;
     id?: string | null;
+    refreshToken?: string | null;
 }
 
 export interface RequestOtpRequest {
@@ -54,59 +51,9 @@ export interface VerifyOtpRequest {
 
 export type VerifyOtpResponse = AdminLoginData;
 
-export interface RegisterRequest {
-    firstName: string | null;
-    lastName: string | null;
-    email: string | null;
-    phoneNumber: string | null;
-    password: string | null;
-    customerType: number;
+export interface RefreshTokenRequest {
+    refreshToken: string;
 }
 
-export interface RegisterData {
-    id: string;
-    dateCreated: string;
-    dateModified: string;
-    firstName: string | null;
-    lastName: string | null;
-    email: string | null;
-    phoneNumber: string | null;
-    customerType: number;
-    dateOfBirth: string | null;
-}
-
-export type RegisterResponse = ApiResponse<RegisterData>;
-
-export interface VerifyEmailRequest {
-    email: string | null;
-    token: string | null;
-}
-
-export type VerifyEmailResponse = ApiResponse<boolean>;
-
-export interface ForgotPasswordRequest {
-    email: string | null;
-}
-
-export type ForgotPasswordResponse = ApiResponse<null>;
-
-export interface ResetPasswordRequest {
-    email: string | null;
-    token: string | null;
-    newPassword: string | null;
-}
-
-export type ResetPasswordResponse = ApiResponse<boolean>;
-
-export interface ChangePasswordRequest {
-    currentPassword: string | null;
-    newPassword: string | null;
-}
-
-export type ChangePasswordResponse = ApiResponse<boolean>;
-
-export interface GoogleAuthRequest {
-    idToken: string | null;
-}
-
-export type GoogleAuthResponse = ApiResponse<AuthData>;
+// Admin API returns a flat response (not wrapped in ApiResponse)
+export type RefreshTokenResponse = AdminLoginData;

@@ -3,11 +3,9 @@
 import { useState, useEffect } from "react";
 import {
     User,
-    Users,
     ShieldCheck,
     Lock,
     Plus,
-    Pencil,
     Trash2,
     Eye,
     EyeOff,
@@ -18,27 +16,14 @@ import {
 import { useQuery, useMutation } from "@tanstack/react-query";
 import adminAccountService from "@/services/adminAccountService";
 import SuccessModal from "@/components/admin/SuccessModal";
-import AddUserModal from "@/components/admin/AddUserModal";
-import EditUserModal from "@/components/admin/EditUserModal";
-import DeleteUserModal from "@/components/admin/DeleteUserModal";
 import AddStaffModal from "@/components/admin/AddStaffModal";
 import DeleteStaffModal from "@/components/admin/DeleteStaffModal";
 
 const SIDEBAR_ITEMS = [
     { id: "profile", label: "Admin Profile", icon: User },
-    { id: "users", label: "Users Management", icon: Users },
     { id: "staff", label: "Staff Management", icon: ShieldCheck },
     { id: "security", label: "Security", icon: Lock },
     { id: "preferences", label: "Preferences", icon: Bell },
-];
-
-const INITIAL_USERS = [
-    { id: 1, firstName: "Guy", lastName: "Hawkins", email: "Tanya.Hill@Example.Com", role: "Owner", status: "Active" },
-    { id: 2, firstName: "Cameron", lastName: "Williamson", email: "Nevaeh.Simmons@Example.Com", role: "Renter", status: "Active" },
-    { id: 3, firstName: "Bessie", lastName: "Cooper", email: "Jackson.Graham@Example.Com", role: "Owner", status: "Active" },
-    { id: 4, firstName: "Wade", lastName: "Warren", email: "Nathan.Roberts@Example.Com", role: "Owner", status: "Active" },
-    { id: 5, firstName: "Kristin", lastName: "Watson", email: "Jackson.Graham@Example.Com", role: "Renter", status: "Active" },
-    { id: 6, firstName: "Courtney", lastName: "Henry", email: "Felicia.Reid@Example.Com", role: "Renter", status: "Inactive" },
 ];
 
 export default function AdminSettingsPage() {
@@ -47,13 +32,6 @@ export default function AdminSettingsPage() {
     // Profile State
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-
-    // User Management State (Mock representation preserved for local interaction)
-    const [users, setUsers] = useState(INITIAL_USERS);
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<any>(null);
 
     // Staff Management State
     const [isAddStaffModalOpen, setIsAddStaffModalOpen] = useState(false);
@@ -192,45 +170,12 @@ export default function AdminSettingsPage() {
         setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
-    // Mock Users Actions
-    const handleAddUser = (user: any) => {
-        setUsers([user, ...users]);
-        setSuccessTitle("User Added");
-        setSuccessMessage("The new user has been successfully added.");
-        setShowSuccess(true);
-    };
-
-    const handleEditUser = (updatedUser: any) => {
-        setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
-        setSuccessTitle("User Updated");
-        setSuccessMessage("The user information has been successfully updated.");
-        setShowSuccess(true);
-    };
-
-    const handleDeleteUser = () => {
-        if (selectedUser) {
-            setUsers(users.filter(u => u.id !== selectedUser.id));
-            setSuccessTitle("User Deleted");
-            setSuccessMessage("The user has been successfully removed.");
-            setShowSuccess(true);
-        }
-    };
-
     return (
         <div className="flex flex-col gap-8 pb-12">
             <div className="flex items-center justify-between">
                 <h1 className="text-[28px] font-bold text-[#1A1A1A] font-montserrat tracking-tight leading-none text-left">
                     Account Settings
                 </h1>
-                {activeTab === "users" && (
-                    <button
-                        onClick={() => setIsAddModalOpen(true)}
-                        className="flex items-center gap-2 px-6 py-3.5 bg-[#002B7F] text-white rounded-[16px] font-bold text-[15px] hover:bg-opacity-90 transition-all shadow-md shadow-blue-900/10 font-montserrat"
-                    >
-                        <Plus size={18} />
-                        Add User
-                    </button>
-                )}
                 {activeTab === "staff" && (
                     <button
                         onClick={() => setIsAddStaffModalOpen(true)}
@@ -351,72 +296,6 @@ export default function AdminSettingsPage() {
                         </div>
                     )}
 
-                    {activeTab === "users" && (
-                        <div className="flex flex-col gap-8">
-                            <h2 className="text-[22px] font-bold text-[#1A1A1A] font-montserrat tracking-tight text-left">
-                                User Management
-                            </h2>
-
-                            <div className="overflow-x-auto">
-                                <table className="w-full">
-                                    <thead>
-                                        <tr className="border-b border-gray-100">
-                                            <th className="text-left py-4 text-[15px] font-bold text-[#1A1A1A] font-montserrat">Name</th>
-                                            <th className="text-left py-4 text-[15px] font-bold text-[#1A1A1A] font-montserrat">Email</th>
-                                            <th className="text-left py-4 text-[15px] font-bold text-[#1A1A1A] font-montserrat">Role</th>
-                                            <th className="text-left py-4 text-[15px] font-bold text-[#1A1A1A] font-montserrat">Status</th>
-                                            <th className="text-left py-4 text-[15px] font-bold text-[#1A1A1A] font-montserrat">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-50">
-                                        {users.map((user) => (
-                                            <tr key={user.id} className="group hover:bg-gray-50/50 transition-all">
-                                                <td className="py-5 text-[14px] font-medium text-[#1A1A1A] font-montserrat">
-                                                    {user.firstName} {user.lastName || ""}
-                                                </td>
-                                                <td className="py-5 text-[14px] font-medium text-gray-500 font-montserrat">
-                                                    {user.email}
-                                                </td>
-                                                <td className="py-5 text-[14px] font-medium text-gray-500 font-montserrat">
-                                                    {user.role}
-                                                </td>
-                                                <td className="py-5">
-                                                    <span className={`px-3 py-1 rounded-full text-[12px] font-bold font-montserrat ${user.status === "Active"
-                                                        ? "bg-green-50 text-green-500"
-                                                        : "bg-red-50 text-red-500"
-                                                        }`}>
-                                                        {user.status}
-                                                    </span>
-                                                </td>
-                                                <td className="py-5">
-                                                    <div className="flex items-center gap-3">
-                                                        <button
-                                                            onClick={() => {
-                                                                setSelectedUser(user);
-                                                                setIsEditModalOpen(true);
-                                                            }}
-                                                            className="p-2 text-[#0095FF] hover:bg-blue-50 rounded-lg transition-all"
-                                                        >
-                                                            <Pencil size={18} />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => {
-                                                                setSelectedUser(user);
-                                                                setIsDeleteModalOpen(true);
-                                                            }}
-                                                            className="p-2 text-[#FF3B30] hover:bg-red-50 rounded-lg transition-all"
-                                                        >
-                                                            <Trash2 size={18} />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
 
                     {activeTab === "staff" && (
                         <div className="flex flex-col gap-8">
@@ -644,29 +523,10 @@ export default function AdminSettingsPage() {
                 </div>
             </div>
 
-            <AddUserModal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
-                onAdd={handleAddUser}
-            />
-
             <AddStaffModal
                 isOpen={isAddStaffModalOpen}
                 onClose={() => setIsAddStaffModalOpen(false)}
                 onAdd={handleAddStaff}
-            />
-
-            <EditUserModal
-                isOpen={isEditModalOpen}
-                onClose={() => setIsEditModalOpen(false)}
-                user={selectedUser}
-                onSave={handleEditUser}
-            />
-
-            <DeleteUserModal
-                isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
-                onDelete={handleDeleteUser}
             />
 
             <DeleteStaffModal
