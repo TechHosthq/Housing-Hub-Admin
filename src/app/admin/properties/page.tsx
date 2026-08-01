@@ -176,7 +176,7 @@ export default function AdminPropertiesPage() {
                         <>
                             <div className="flex flex-col gap-4 p-6">
                                 {paginatedProperties.map((property) => {
-                                    const propertyImage = property.files?.[0]?.fileUrl || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=300";
+                                    const propertyImage = property.thumbnailUrl || property.files?.[0]?.fileUrl || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=300";
                                     const propertyLocation = property.propertyAddress
                                         ? `${property.propertyAddress.place || ""}, ${property.propertyAddress.city || ""}, ${property.propertyAddress.state || ""}`
                                         : property.address || "Location N/A";
