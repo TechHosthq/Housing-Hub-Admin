@@ -70,6 +70,7 @@ export interface PropertyDetail {
     datePosted?: string;
     thumbnailUrl?: string | null;
     inspectionCount?: number;
+    unpublishReason?: string | null;
 }
 
 export interface PropertyDashboardStats {

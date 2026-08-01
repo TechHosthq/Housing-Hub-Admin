@@ -6,6 +6,8 @@ import { ChevronLeft, Calendar, Loader2, ArrowRight, ShieldCheck, ShieldOff, Tra
 import Image from "next/image";
 import SuccessModal from "@/components/admin/SuccessModal";
 import DeletePropertyModal from "@/components/admin/DeletePropertyModal";
+import UnpublishPropertyModal from "@/components/admin/UnpublishPropertyModal";
+import VerifyPropertyModal from "@/components/admin/VerifyPropertyModal";
 import { useInspection } from "@/hooks/useInspection";
 import { useProperty } from "@/hooks/useProperty";
 import { format } from "date-fns";
@@ -41,6 +43,8 @@ export default function PropertyInformationPage() {
     const [successTitle, setSuccessTitle] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showUnpublishModal, setShowUnpublishModal] = useState(false);
+    const [showVerifyModal, setShowVerifyModal] = useState(false);
 
     const { usePropertyInspections } = useInspection();
     const {
@@ -72,13 +76,7 @@ export default function PropertyInformationPage() {
 
     const handleToggleStatus = () => {
         if (isPublished) {
-            unpublishProperty(id, {
-                onSuccess: () => {
-                    setSuccessTitle("Property Unpublished");
-                    setSuccessMessage("The property has been successfully unpublished.");
-                    setShowSuccess(true);
-                }
-            });
+            setShowUnpublishModal(true);
         } else {
             publishProperty(id, {
                 onSuccess: () => {
@@ -93,6 +91,16 @@ export default function PropertyInformationPage() {
         }
     };
 
+    const handleUnpublish = (reason: string) => {
+        unpublishProperty({ id, reason }, {
+            onSuccess: () => {
+                setSuccessTitle("Property Unpublished");
+                setSuccessMessage("The property has been unpublished and the owner notified.");
+                setShowSuccess(true);
+            }
+        });
+    };
+
     const handleToggleVerified = () => {
         if (isVerified) {
             unverifyProperty(id, {
@@ -103,18 +111,22 @@ export default function PropertyInformationPage() {
                 }
             });
         } else {
-            verifyProperty(id, {
-                onSuccess: () => {
-                    setSuccessTitle("Property Verified");
-                    setSuccessMessage("The property has been successfully verified.");
-                    setShowSuccess(true);
-                }
-            });
+            setShowVerifyModal(true);
         }
     };
 
-    const handleDelete = () => {
-        deleteProperty(id, {
+    const handleVerify = () => {
+        verifyProperty(id, {
+            onSuccess: () => {
+                setSuccessTitle("Property Verified");
+                setSuccessMessage("The property has been verified and the owner notified.");
+                setShowSuccess(true);
+            }
+        });
+    };
+
+    const handleDelete = (reason: string) => {
+        deleteProperty({ id, reason }, {
             onSuccess: () => {
                 router.push("/admin/properties");
             }
@@ -368,6 +380,18 @@ export default function PropertyInformationPage() {
                 isOpen={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
                 onDelete={handleDelete}
+            />
+
+            <UnpublishPropertyModal
+                isOpen={showUnpublishModal}
+                onClose={() => setShowUnpublishModal(false)}
+                onUnpublish={handleUnpublish}
+            />
+
+            <VerifyPropertyModal
+                isOpen={showVerifyModal}
+                onClose={() => setShowVerifyModal(false)}
+                onVerify={handleVerify}
             />
 
             <SuccessModal
