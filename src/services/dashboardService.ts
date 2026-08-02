@@ -42,9 +42,9 @@ const dashboardService = {
         return response.data?.data ?? response.data;
     },
 
-    getRecentActivity: async (count = 10): Promise<AdminRecentActivity[]> => {
+    getRecentActivity: async (count = 10, days = 7): Promise<AdminRecentActivity[]> => {
         const response = await apiClient.get('/api/AdminDashboard/activity', {
-            params: { count }
+            params: { count, days }
         });
         return response.data?.data ?? response.data;
     }

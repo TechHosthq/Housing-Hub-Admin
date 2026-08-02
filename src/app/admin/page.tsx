@@ -27,7 +27,16 @@ const STATUS_LABELS: Record<number, string> = {
     [InspectionStatus.RescheduleRequested]: "Rescheduled",
 };
 
+const DAYS_FILTER_OPTIONS = [
+    { label: "Last 7 days", value: 7 },
+    { label: "Last 30 days", value: 30 },
+    { label: "Last 90 days", value: 90 },
+];
+
 export default function AdminDashboard() {
+    const [daysFilter, setDaysFilter] = useState(30);
+    const [isDaysFilterOpen, setIsDaysFilterOpen] = useState(false);
+
     const { data: todaysInspections, isLoading: loadingInspections } = useQuery({
         queryKey: ["dashboard-todays-inspections"],
         queryFn: () => dashboardService.getTodaysInspections(1, 50), // Fetch up to 50 for client-side pagination
@@ -35,8 +44,8 @@ export default function AdminDashboard() {
     });
 
     const { data: recentActivity, isLoading: loadingActivity } = useQuery({
-        queryKey: ["dashboard-activity"],
-        queryFn: () => dashboardService.getRecentActivity(50), // Fetch more for client-side pagination
+        queryKey: ["dashboard-activity", daysFilter],
+        queryFn: () => dashboardService.getRecentActivity(50, daysFilter), // Fetch more for client-side pagination
         refetchInterval: 60_000,
     });
 
@@ -64,10 +73,38 @@ export default function AdminDashboard() {
             {/* Overview Header */}
             <div className="flex items-center justify-between">
                 <h1 className="text-[28px] font-bold text-[#1A1A1A] font-montserrat">Overview</h1>
-                <div className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-100 rounded-lg shadow-sm cursor-pointer group hover:border-gray-200 transition-all">
-                    <ListFilter size={18} className="text-gray-400 group-hover:text-[#0095FF] transition-colors" />
-                    <span className="text-[14px] font-medium text-gray-500">Last 30 days</span>
-                    <ChevronDown size={18} className="text-gray-400 group-hover:text-[#0095FF] transition-colors" />
+                <div className="relative">
+                    <button
+                        onClick={() => setIsDaysFilterOpen((open) => !open)}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-100 rounded-lg shadow-sm group hover:border-gray-200 transition-all"
+                    >
+                        <ListFilter size={18} className="text-gray-400 group-hover:text-[#0095FF] transition-colors" />
+                        <span className="text-[14px] font-medium text-gray-500">
+                            {DAYS_FILTER_OPTIONS.find((o) => o.value === daysFilter)?.label ?? "Last 30 days"}
+                        </span>
+                        <ChevronDown size={18} className="text-gray-400 group-hover:text-[#0095FF] transition-colors" />
+                    </button>
+
+                    {isDaysFilterOpen && (
+                        <>
+                            <div className="fixed inset-0 z-10" onClick={() => setIsDaysFilterOpen(false)} />
+                            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-lg z-20 overflow-hidden">
+                                {DAYS_FILTER_OPTIONS.map((option) => (
+                                    <button
+                                        key={option.value}
+                                        onClick={() => {
+                                            setDaysFilter(option.value);
+                                            setIsDaysFilterOpen(false);
+                                        }}
+                                        className={`w-full text-left px-4 py-2.5 text-[14px] font-medium hover:bg-gray-50 transition-colors ${option.value === daysFilter ? "text-[#0095FF] font-bold" : "text-gray-600"
+                                            }`}
+                                    >
+                                        {option.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -175,7 +212,9 @@ export default function AdminDashboard() {
 
             {/* Recent Activity Section */}
             <div className="flex flex-col gap-6">
-                <h2 className="text-[24px] font-bold text-[#1A1A1A] font-montserrat">Recent Activity</h2>
+                <h2 className="text-[24px] font-bold text-[#1A1A1A] font-montserrat">
+                    Recent Activity <span className="text-gray-400 font-medium text-[16px]">({DAYS_FILTER_OPTIONS.find((o) => o.value === daysFilter)?.label.toLowerCase()})</span>
+                </h2>
 
                 {loadingActivity ? (
                     <div className="flex justify-center py-8">
