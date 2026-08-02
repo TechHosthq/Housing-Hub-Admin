@@ -18,6 +18,12 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        // Property/profile photos uploaded to S3 (see S3FileStorageService.UploadFileAsync
+        // for the exact URL shape: https://{bucket}.s3.{region}.amazonaws.com/{key}).
+        protocol: 'https',
+        hostname: 'housinghub-files-dev.s3.af-south-1.amazonaws.com',
+      },
     ],
   },
 };

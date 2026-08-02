@@ -18,6 +18,9 @@ export interface Customer extends User {
     idDocumentUrl: string | null;
     kycSubmittedAt: string | null;
     isKycVerified: boolean;
+    emailVerified?: boolean;
+    profileImageUrl?: string | null;
+    kycRejectionReason?: string | null;
     jobTitle: string | null;
     companyName: string | null;
     industry: string | null;

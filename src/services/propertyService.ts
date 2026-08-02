@@ -74,13 +74,13 @@ export const propertyService = {
         return response.data;
     },
 
-    unpublishProperty: async (id: string): Promise<ApiResponse<boolean>> => {
-        const response = await apiClient.put<ApiResponse<boolean>>(`/api/AdminProperty/${id}/unpublish`);
+    unpublishProperty: async (id: string, reason: string): Promise<ApiResponse<boolean>> => {
+        const response = await apiClient.put<ApiResponse<boolean>>(`/api/AdminProperty/${id}/unpublish`, null, { params: { reason } });
         return response.data;
     },
 
-    deleteProperty: async (id: string): Promise<ApiResponse<boolean>> => {
-        const response = await apiClient.delete<ApiResponse<boolean>>(`/api/AdminProperty/${id}`);
+    deleteProperty: async (id: string, reason: string): Promise<ApiResponse<boolean>> => {
+        const response = await apiClient.delete<ApiResponse<boolean>>(`/api/AdminProperty/${id}`, { params: { reason } });
         return response.data;
     },
 

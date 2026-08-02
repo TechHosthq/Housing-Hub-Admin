@@ -6,12 +6,10 @@ import { Bell, ChevronDown, LayoutDashboard, Building2, Users, ClipboardList, Me
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import UserDropdown from "./UserDropdown";
-import { useUserRole } from "@/context/UserRoleContext";
 
 export default function AdminNavbar() {
     const pathname = usePathname();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const { role, toggleRole } = useUserRole();
 
     const isActive = (path: string) => pathname === path || pathname.startsWith(`${path}/`);
 
@@ -57,6 +55,12 @@ export default function AdminNavbar() {
                         Property
                     </Link>
                     <Link
+                        href="/admin/messages"
+                        className={`${isActive("/admin/messages") ? "text-[#0095FF]" : "text-[#1A1A1A]"} font-medium text-[14px] hover:text-[#0095FF] transition-colors`}
+                    >
+                        Messages
+                    </Link>
+                    <Link
                         href="/admin/settings"
                         className={`${isActive("/admin/settings") ? "text-[#0095FF]" : "text-[#1A1A1A]"} font-medium text-[14px] hover:text-[#0095FF] transition-colors`}
                     >
@@ -82,15 +86,6 @@ export default function AdminNavbar() {
 
                     {isDropdownOpen && (
                         <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-50">
-                            <button
-                                onClick={() => {
-                                    toggleRole();
-                                    setIsDropdownOpen(false);
-                                }}
-                                className="w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                            >
-                                Switch to {role === "Customer" ? "Owner" : "Customer"}
-                            </button>
                             <Link
                                 href="/logout"
                                 className="block px-4 py-2 text-[14px] text-red-600 hover:bg-gray-50 flex items-center gap-2"

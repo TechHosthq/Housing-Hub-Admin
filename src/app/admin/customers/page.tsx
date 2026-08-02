@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { Search, CheckCircle2, AlertCircle, User as UserIcon, Loader2, Ban, RefreshCw } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import SuccessModal from "@/components/admin/SuccessModal";
 import Pagination from "@/components/admin/Pagination";
 import { useCustomer } from "@/hooks/useCustomer";
@@ -16,6 +17,7 @@ const TABS = [
 ];
 
 export default function AdminCustomersPage() {
+    const router = useRouter();
     const { useAllCustomers, suspendCustomer, isSuspendingCustomer, reactivateCustomer, isReactivatingCustomer } = useCustomer();
 
     const [search, setSearch] = useState("");
@@ -38,7 +40,7 @@ export default function AdminCustomersPage() {
     const tab = TABS[activeTab];
     const { data: customersResponse, isLoading } = useAllCustomers({
         pageNumber,
-        pageSize: 20,
+        pageSize: 10,
         search: debouncedSearch || undefined,
         isVerified: tab.isVerified,
         isActive: tab.isActive,
@@ -47,7 +49,7 @@ export default function AdminCustomersPage() {
     const customers = customersResponse?.data?.items ?? [];
     const apiTotalCount = customersResponse?.data?.totalCount ?? 0;
     const apiTotalPages = customersResponse?.data?.totalPages ?? 1;
-    const ITEMS_PER_PAGE = 20;
+    const ITEMS_PER_PAGE = 10;
 
     // If API provides pagination use it; otherwise fallback to client-side pagination
     const totalCount = apiTotalCount || customers.length;
@@ -175,7 +177,8 @@ export default function AdminCustomersPage() {
                                 return (
                                     <div
                                         key={customer.id}
-                                        className="bg-gray-50 border border-gray-100 rounded-[16px] p-6 shadow-sm hover:shadow-md transition-all group relative"
+                                        onClick={() => router.push(`/admin/customers/${customer.id}`)}
+                                        className="bg-gray-50 border border-gray-100 rounded-[16px] p-6 shadow-sm hover:shadow-md transition-all group relative cursor-pointer"
                                     >
                                         <div className="flex items-center gap-5">
                                             <div className={`w-14 h-14 rounded-full flex items-center justify-center ${isActive ? "bg-[#F2F7FF] text-gray-400" : "bg-red-50 text-red-300"}`}>
@@ -253,7 +256,7 @@ export default function AdminCustomersPage() {
                                 totalPages={totalPages}
                                 totalCount={totalCount}
                                 onPageChange={setPageNumber}
-                                itemsPerPage={20}
+                                itemsPerPage={10}
                             />
                         )}
                     </>

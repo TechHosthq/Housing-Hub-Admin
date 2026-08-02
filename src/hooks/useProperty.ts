@@ -80,7 +80,7 @@ export const useProperty = () => {
     });
 
     const deletePropertyMutation = useMutation({
-        mutationFn: (id: string) => propertyService.deleteProperty(id),
+        mutationFn: ({ id, reason }: { id: string, reason: string }) => propertyService.deleteProperty(id, reason),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['my-properties'] });
             queryClient.invalidateQueries({ queryKey: ['properties'] });
@@ -96,9 +96,9 @@ export const useProperty = () => {
     });
 
     const unpublishPropertyMutation = useMutation({
-        mutationFn: (id: string) => propertyService.unpublishProperty(id),
-        onSuccess: (_, id) => {
-            queryClient.invalidateQueries({ queryKey: ['property', id] });
+        mutationFn: ({ id, reason }: { id: string, reason: string }) => propertyService.unpublishProperty(id, reason),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['property', variables.id] });
             queryClient.invalidateQueries({ queryKey: ['properties'] });
         }
     });

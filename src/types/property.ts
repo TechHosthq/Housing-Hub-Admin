@@ -68,6 +68,9 @@ export interface PropertyDetail {
     ownerName?: string | null;
     address?: string | null;
     datePosted?: string;
+    thumbnailUrl?: string | null;
+    inspectionCount?: number;
+    unpublishReason?: string | null;
 }
 
 export interface PropertyDashboardStats {

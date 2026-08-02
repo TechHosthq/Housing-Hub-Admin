@@ -8,6 +8,7 @@ export interface AdminProfile {
     email: string | null;
     dateCreated: string;
     isActive: boolean;
+    role: string;
 }
 
 export interface StaffMember {
@@ -17,6 +18,7 @@ export interface StaffMember {
     email: string | null;
     dateCreated: string;
     isActive: boolean;
+    role: string;
 }
 
 export const adminAccountService = {
@@ -44,6 +46,7 @@ export const adminAccountService = {
         firstName: string | null;
         lastName: string | null;
         email: string | null;
+        role: string;
     }): Promise<ApiResponse<StaffMember>> => {
         const response = await apiClient.post('/api/AdminAccount/staff', data);
         return response.data;

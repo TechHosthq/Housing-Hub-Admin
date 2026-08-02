@@ -6,10 +6,10 @@ import { useState } from "react";
 interface AddStaffModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAdd: (staff: { firstName: string; lastName: string; email: string }) => void;
+    onAdd: (staff: { firstName: string; lastName: string; email: string; role: string }) => void;
 }
 
-const EMPTY_FORM = { firstName: "", lastName: "", email: "" };
+const EMPTY_FORM = { firstName: "", lastName: "", email: "", role: "Admin" };
 
 export default function AddStaffModal({ isOpen, onClose, onAdd }: AddStaffModalProps) {
     const [formData, setFormData] = useState(EMPTY_FORM);
@@ -85,6 +85,18 @@ export default function AddStaffModal({ isOpen, onClose, onAdd }: AddStaffModalP
                             className="w-full px-6 py-4 bg-white border border-gray-100 rounded-[20px] text-[15px] font-medium text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all font-montserrat"
                             placeholder="Enter email address"
                         />
+                    </div>
+
+                    <div className="flex flex-col gap-3">
+                        <label className="text-[14px] font-medium text-gray-400">Role</label>
+                        <select
+                            value={formData.role}
+                            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                            className="w-full px-6 py-4 bg-white border border-gray-100 rounded-[20px] text-[15px] font-medium text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all font-montserrat"
+                        >
+                            <option value="Admin">Admin</option>
+                            <option value="SuperAdmin">Super Admin</option>
+                        </select>
                     </div>
 
                     <div className="flex items-center justify-end gap-4 mt-4">

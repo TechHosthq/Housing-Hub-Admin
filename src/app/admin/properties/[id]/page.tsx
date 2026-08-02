@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ChevronLeft, Calendar, Loader2, ArrowRight, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
+import { ChevronLeft, Calendar, Loader2, ArrowRight, ShieldCheck, ShieldOff, Trash2, MessageSquare } from "lucide-react";
 import Image from "next/image";
 import SuccessModal from "@/components/admin/SuccessModal";
 import DeletePropertyModal from "@/components/admin/DeletePropertyModal";
+import UnpublishPropertyModal from "@/components/admin/UnpublishPropertyModal";
+import VerifyPropertyModal from "@/components/admin/VerifyPropertyModal";
 import { useInspection } from "@/hooks/useInspection";
 import { useProperty } from "@/hooks/useProperty";
 import { format } from "date-fns";
 import Link from "next/link";
 import { PropertyType, AvailabilityStatus, PropertyLeaseType } from "@/types/property";
+import { decodePropertyFeatures } from "@/lib/propertyFeatures";
 
 const propertyTypeLabels: Record<PropertyType, string> = {
     [PropertyType.House]: "House",
@@ -40,6 +43,8 @@ export default function PropertyInformationPage() {
     const [successTitle, setSuccessTitle] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showUnpublishModal, setShowUnpublishModal] = useState(false);
+    const [showVerifyModal, setShowVerifyModal] = useState(false);
 
     const { usePropertyInspections } = useInspection();
     const {
@@ -71,13 +76,7 @@ export default function PropertyInformationPage() {
 
     const handleToggleStatus = () => {
         if (isPublished) {
-            unpublishProperty(id, {
-                onSuccess: () => {
-                    setSuccessTitle("Property Unpublished");
-                    setSuccessMessage("The property has been successfully unpublished.");
-                    setShowSuccess(true);
-                }
-            });
+            setShowUnpublishModal(true);
         } else {
             publishProperty(id, {
                 onSuccess: () => {
@@ -92,6 +91,16 @@ export default function PropertyInformationPage() {
         }
     };
 
+    const handleUnpublish = (reason: string) => {
+        unpublishProperty({ id, reason }, {
+            onSuccess: () => {
+                setSuccessTitle("Property Unpublished");
+                setSuccessMessage("The property has been unpublished and the owner notified.");
+                setShowSuccess(true);
+            }
+        });
+    };
+
     const handleToggleVerified = () => {
         if (isVerified) {
             unverifyProperty(id, {
@@ -102,18 +111,22 @@ export default function PropertyInformationPage() {
                 }
             });
         } else {
-            verifyProperty(id, {
-                onSuccess: () => {
-                    setSuccessTitle("Property Verified");
-                    setSuccessMessage("The property has been successfully verified.");
-                    setShowSuccess(true);
-                }
-            });
+            setShowVerifyModal(true);
         }
     };
 
-    const handleDelete = () => {
-        deleteProperty(id, {
+    const handleVerify = () => {
+        verifyProperty(id, {
+            onSuccess: () => {
+                setSuccessTitle("Property Verified");
+                setSuccessMessage("The property has been verified and the owner notified.");
+                setShowSuccess(true);
+            }
+        });
+    };
+
+    const handleDelete = (reason: string) => {
+        deleteProperty({ id, reason }, {
             onSuccess: () => {
                 router.push("/admin/properties");
             }
@@ -134,6 +147,7 @@ export default function PropertyInformationPage() {
         : "N/A";
 
     const formattedPrice = property.price !== undefined ? `₦ ${property.price.toLocaleString()}` : "₦ 0";
+    const featureLabels = decodePropertyFeatures(property.features);
 
     return (
         <div className="flex flex-col gap-8 pb-12">
@@ -223,7 +237,20 @@ export default function PropertyInformationPage() {
                     </div>
                     <div className="flex justify-between items-start pb-4 border-b border-gray-50">
                         <span className="text-[12px] font-black text-[#B3B3B3] uppercase tracking-wider">Features</span>
-                        <span className="text-[14px] font-bold text-[#1A1A1A]">Features ID: {property.features}</span>
+                        {featureLabels.length > 0 ? (
+                            <div className="flex flex-wrap gap-2 justify-end max-w-[60%]">
+                                {featureLabels.map((label) => (
+                                    <span
+                                        key={label}
+                                        className="text-[12px] font-bold text-[#0095FF] bg-blue-50 px-3 py-1 rounded-full"
+                                    >
+                                        {label}
+                                    </span>
+                                ))}
+                            </div>
+                        ) : (
+                            <span className="text-[14px] font-bold text-[#1A1A1A]">None listed</span>
+                        )}
                     </div>
                 </div>
             </div>
@@ -315,6 +342,14 @@ export default function PropertyInformationPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                <Link
+                    href={`/admin/messages?recipientId=${property.ownerId}`}
+                    className="flex-1 py-5 border-2 border-gray-200 text-[#1A1A1A] rounded-[16px] font-bold text-[16px] hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
+                >
+                    <MessageSquare size={20} />
+                    Message Owner
+                </Link>
+
                 <button
                     onClick={handleToggleStatus}
                     disabled={isPublishing || isUnpublishing}
@@ -353,6 +388,18 @@ export default function PropertyInformationPage() {
                 isOpen={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
                 onDelete={handleDelete}
+            />
+
+            <UnpublishPropertyModal
+                isOpen={showUnpublishModal}
+                onClose={() => setShowUnpublishModal(false)}
+                onUnpublish={handleUnpublish}
+            />
+
+            <VerifyPropertyModal
+                isOpen={showVerifyModal}
+                onClose={() => setShowVerifyModal(false)}
+                onVerify={handleVerify}
             />
 
             <SuccessModal

@@ -5,7 +5,10 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useResendCooldown } from "@/hooks/useResendCooldown";
 import { resolveApiError } from "@/utils/errorResolver";
+
+const OTP_RESEND_SECONDS = 60;
 
 export default function LoginForm() {
     const router = useRouter();
@@ -18,7 +21,13 @@ export default function LoginForm() {
     const [step, setStep] = useState<"email" | "code">("email");
     const [email, setEmail] = useState("");
     const [code, setCode] = useState("");
+    const [requestMessage, setRequestMessage] = useState<string | null>(null);
     const codeInputRef = useRef<HTMLInputElement>(null);
+
+    // The server enforces the real 60s cooldown (identical response whether the
+    // email exists, was throttled, or not — see the backend for why); this just
+    // mirrors that fixed, known duration so the resend button disables in sync.
+    const { isCoolingDown, formatted, startCooldown } = useResendCooldown(email);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -34,7 +43,23 @@ export default function LoginForm() {
 
     const handleRequestOtp = (e: React.FormEvent) => {
         e.preventDefault();
-        requestOtp({ email }, { onSuccess: () => setStep("code") });
+        requestOtp({ email }, {
+            onSuccess: (response) => {
+                setRequestMessage(response.message);
+                startCooldown(OTP_RESEND_SECONDS);
+                setStep("code");
+            }
+        });
+    };
+
+    const handleResend = () => {
+        if (isCoolingDown) return;
+        requestOtp({ email }, {
+            onSuccess: (response) => {
+                setRequestMessage(response.message);
+                startCooldown(OTP_RESEND_SECONDS);
+            }
+        });
     };
 
     const handleVerifyOtp = (e: React.FormEvent) => {
@@ -65,7 +90,7 @@ export default function LoginForm() {
             <p className="text-[12px] text-[#666666] mb-7 text-center">
                 {step === "email"
                     ? "Enter your admin email to get a login code."
-                    : `Enter the 6-digit code we sent to ${email}.`}
+                    : (requestMessage ?? `Enter the 6-digit code we sent to ${email}.`)}
             </p>
 
             {step === "email" ? (
@@ -122,9 +147,20 @@ export default function LoginForm() {
                         >
                             {isVerifyingOtp ? <Loader2 className="animate-spin mr-2" size={20} /> : "Verify & Log In"}
                         </button>
+
                         <button
                             type="button"
-                            onClick={() => { setStep("email"); setCode(""); }}
+                            onClick={handleResend}
+                            disabled={isRequestingOtp || isCoolingDown}
+                            className="w-full text-[12px] font-semibold text-[#666666] hover:text-primary-dark transition-colors disabled:opacity-60 disabled:hover:text-[#666666] flex items-center justify-center gap-2"
+                        >
+                            {isRequestingOtp && <Loader2 className="animate-spin" size={14} />}
+                            {isCoolingDown ? `Resend code in ${formatted}` : "Resend code"}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => { setStep("email"); setCode(""); setRequestMessage(null); }}
                             className="w-full text-[12px] font-semibold text-[#666666] hover:text-primary-dark transition-colors"
                         >
                             Use a different email
