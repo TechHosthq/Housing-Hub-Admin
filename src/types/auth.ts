@@ -6,6 +6,7 @@ export interface User {
     phoneNumber: string | null;
     customerType: number;
     dateCreated: string;
+    role?: string;
 }
 
 export interface ApiResponse<T> {

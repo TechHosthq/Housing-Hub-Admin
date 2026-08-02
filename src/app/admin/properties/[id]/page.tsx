@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ChevronLeft, Calendar, Loader2, ArrowRight, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
+import { ChevronLeft, Calendar, Loader2, ArrowRight, ShieldCheck, ShieldOff, Trash2, MessageSquare } from "lucide-react";
 import Image from "next/image";
 import SuccessModal from "@/components/admin/SuccessModal";
 import DeletePropertyModal from "@/components/admin/DeletePropertyModal";
@@ -342,6 +342,14 @@ export default function PropertyInformationPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                <Link
+                    href={`/admin/messages?recipientId=${property.ownerId}`}
+                    className="flex-1 py-5 border-2 border-gray-200 text-[#1A1A1A] rounded-[16px] font-bold text-[16px] hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
+                >
+                    <MessageSquare size={20} />
+                    Message Owner
+                </Link>
+
                 <button
                     onClick={handleToggleStatus}
                     disabled={isPublishing || isUnpublishing}

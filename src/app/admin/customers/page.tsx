@@ -38,7 +38,7 @@ export default function AdminCustomersPage() {
     const tab = TABS[activeTab];
     const { data: customersResponse, isLoading } = useAllCustomers({
         pageNumber,
-        pageSize: 20,
+        pageSize: 10,
         search: debouncedSearch || undefined,
         isVerified: tab.isVerified,
         isActive: tab.isActive,
@@ -47,7 +47,7 @@ export default function AdminCustomersPage() {
     const customers = customersResponse?.data?.items ?? [];
     const apiTotalCount = customersResponse?.data?.totalCount ?? 0;
     const apiTotalPages = customersResponse?.data?.totalPages ?? 1;
-    const ITEMS_PER_PAGE = 20;
+    const ITEMS_PER_PAGE = 10;
 
     // If API provides pagination use it; otherwise fallback to client-side pagination
     const totalCount = apiTotalCount || customers.length;
@@ -253,7 +253,7 @@ export default function AdminCustomersPage() {
                                 totalPages={totalPages}
                                 totalCount={totalCount}
                                 onPageChange={setPageNumber}
-                                itemsPerPage={20}
+                                itemsPerPage={10}
                             />
                         )}
                     </>
