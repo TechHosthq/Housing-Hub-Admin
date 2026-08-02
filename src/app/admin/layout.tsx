@@ -1,5 +1,5 @@
 import AdminNavbar from "@/components/layout/AdminNavbar";
-import Footer from "@/components/layout/Footer";
+import AdminFooter from "@/components/layout/AdminFooter";
 
 export default function AdminLayout({
     children,
@@ -7,12 +7,12 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="min-h-screen bg-[#F8FAFC]">
+        <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
             <AdminNavbar />
-            <main className="max-w-7xl mx-auto px-6 md:px-8 pt-24 pb-20">
+            <main className="max-w-7xl mx-auto px-6 md:px-8 pt-24 pb-20 flex-1 w-full">
                 {children}
             </main>
-            <Footer />
+            <AdminFooter />
         </div>
     );
 }
