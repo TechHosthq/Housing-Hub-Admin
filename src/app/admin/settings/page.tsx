@@ -19,9 +19,9 @@ import SuccessModal from "@/components/admin/SuccessModal";
 import AddStaffModal from "@/components/admin/AddStaffModal";
 import DeleteStaffModal from "@/components/admin/DeleteStaffModal";
 
-const SIDEBAR_ITEMS = [
+const ALL_SIDEBAR_ITEMS = [
     { id: "profile", label: "Admin Profile", icon: User },
-    { id: "staff", label: "Staff Management", icon: ShieldCheck },
+    { id: "staff", label: "Staff Management", icon: ShieldCheck, superAdminOnly: true },
     { id: "security", label: "Security", icon: Lock },
     { id: "preferences", label: "Preferences", icon: Bell },
 ];
@@ -63,8 +63,18 @@ export default function AdminSettingsPage() {
     const { data: profile, isLoading: isLoadingProfile, refetch: refetchProfile } = useQuery({
         queryKey: ["admin-profile"],
         queryFn: () => adminAccountService.getProfile(),
-        enabled: activeTab === "profile",
     });
+
+    const isSuperAdmin = profile?.role === "SuperAdmin";
+    const SIDEBAR_ITEMS = ALL_SIDEBAR_ITEMS.filter((item) => !item.superAdminOnly || isSuperAdmin);
+
+    // A non-SuperAdmin who somehow lands on the staff tab (e.g. a stale URL) gets
+    // bounced back to their profile instead of seeing an empty/forbidden panel.
+    useEffect(() => {
+        if (activeTab === "staff" && profile && !isSuperAdmin) {
+            setActiveTab("profile");
+        }
+    }, [activeTab, profile, isSuperAdmin]);
 
     useEffect(() => {
         if (profile) {
@@ -114,11 +124,11 @@ export default function AdminSettingsPage() {
     const { data: staffMembers = [], isLoading: isLoadingStaff, refetch: refetchStaff } = useQuery({
         queryKey: ["admin-staff"],
         queryFn: () => adminAccountService.getStaff(),
-        enabled: activeTab === "staff",
+        enabled: activeTab === "staff" && isSuperAdmin,
     });
 
     const createStaffMutation = useMutation({
-        mutationFn: (data: { firstName: string | null; lastName: string | null; email: string | null }) =>
+        mutationFn: (data: { firstName: string | null; lastName: string | null; email: string | null; role: string }) =>
             adminAccountService.createStaff(data),
         onSuccess: () => {
             refetchStaff();
@@ -153,6 +163,7 @@ export default function AdminSettingsPage() {
             firstName: newStaff.firstName,
             lastName: newStaff.lastName,
             email: newStaff.email,
+            role: newStaff.role,
         });
     };
 
@@ -314,6 +325,7 @@ export default function AdminSettingsPage() {
                                             <tr className="border-b border-gray-100">
                                                 <th className="text-left py-4 text-[15px] font-bold text-[#1A1A1A] font-montserrat">Name</th>
                                                 <th className="text-left py-4 text-[15px] font-bold text-[#1A1A1A] font-montserrat">Email</th>
+                                                <th className="text-left py-4 text-[15px] font-bold text-[#1A1A1A] font-montserrat">Role</th>
                                                 <th className="text-left py-4 text-[15px] font-bold text-[#1A1A1A] font-montserrat">Status</th>
                                                 <th className="text-left py-4 text-[15px] font-bold text-[#1A1A1A] font-montserrat">Action</th>
                                             </tr>
@@ -326,6 +338,14 @@ export default function AdminSettingsPage() {
                                                     </td>
                                                     <td className="py-5 text-[14px] font-medium text-gray-500 font-montserrat">
                                                         {member.email}
+                                                    </td>
+                                                    <td className="py-5">
+                                                        <span className={`px-3 py-1 rounded-full text-[12px] font-bold font-montserrat ${member.role === "SuperAdmin"
+                                                            ? "bg-blue-50 text-[#0095FF]"
+                                                            : "bg-gray-100 text-gray-500"
+                                                            }`}>
+                                                            {member.role === "SuperAdmin" ? "Super Admin" : "Admin"}
+                                                        </span>
                                                     </td>
                                                     <td className="py-5">
                                                         <span className={`px-3 py-1 rounded-full text-[12px] font-bold font-montserrat ${member.isActive !== false
