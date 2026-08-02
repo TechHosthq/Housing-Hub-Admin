@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Search, CheckCircle2, AlertCircle, Ban, User, RefreshCw, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import SuccessModal from "@/components/admin/SuccessModal";
 import { useOwner } from "@/hooks/useOwner";
 import { format } from "date-fns";
@@ -15,6 +16,7 @@ const TABS = [
 ];
 
 export default function AdminOwnersPage() {
+    const router = useRouter();
     const { useAllOwners, suspendOwner, isSuspendingOwner, reactivateOwner, isReactivatingOwner } = useOwner();
 
     const [search, setSearch] = useState("");
@@ -36,7 +38,7 @@ export default function AdminOwnersPage() {
     const tab = TABS[activeTab];
     const { data: ownersResponse, isLoading } = useAllOwners({
         pageNumber,
-        pageSize: 20,
+        pageSize: 10,
         search: debouncedSearch || undefined,
         isVerified: tab.isVerified,
         isActive: tab.isActive,
@@ -131,7 +133,11 @@ export default function AdminOwnersPage() {
                         const status = owner.isKycVerified ? "Verified" : owner.kycPending ? "Pending KYC" : "Unverified";
 
                         return (
-                            <div key={owner.id} className="bg-white border border-gray-100 rounded-[20px] p-6 shadow-sm hover:shadow-md transition-all group relative">
+                            <div
+                                key={owner.id}
+                                onClick={() => router.push(`/admin/owners/${owner.id}`)}
+                                className="bg-white border border-gray-100 rounded-[20px] p-6 shadow-sm hover:shadow-md transition-all group relative cursor-pointer"
+                            >
                                 <div className="flex items-center gap-5">
                                     <div className={`w-14 h-14 rounded-full flex items-center justify-center ${isActive ? "bg-[#F2F7FF] text-gray-400" : "bg-red-50 text-red-300"}`}>
                                         <User size={28} strokeWidth={1.5} />
@@ -169,7 +175,7 @@ export default function AdminOwnersPage() {
                                     </div>
 
                                     {/* Actions */}
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                                         {owner.kycPending && (
                                             <Link
                                                 href={`/admin/kyc-review/${owner.id}?type=owner`}
