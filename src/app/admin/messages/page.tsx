@@ -7,6 +7,7 @@ import AdminMessageList from "@/components/admin/AdminMessageList";
 function MessagesContent() {
     const searchParams = useSearchParams();
     const newRecipientId = searchParams.get("recipientId");
+    const newRecipientName = searchParams.get("recipientName");
 
     const [isChatting, setIsChatting] = useState(!!newRecipientId);
     const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
@@ -47,6 +48,7 @@ function MessagesContent() {
                     selectedId={selectedThreadId}
                     onThreadSelect={handleThreadSelect}
                     newRecipientId={selectedThreadId ? null : newRecipientId}
+                    newRecipientName={selectedThreadId ? null : newRecipientName}
                 />
             </div>
         </div>

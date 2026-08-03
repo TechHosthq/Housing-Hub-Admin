@@ -58,6 +58,25 @@ export const useInspection = () => {
         }
     });
 
+    const rescheduleInspectionMutation = useMutation({
+        mutationFn: ({ id, data }: { id: string; data: { rescheduledDate: string; rescheduledTime: string; note?: string | null } }) =>
+            inspectionService.rescheduleInspection(id, data),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['inspection', variables.id] });
+            queryClient.invalidateQueries({ queryKey: ['inspections'] });
+            queryClient.invalidateQueries({ queryKey: ['property-inspections'] });
+        }
+    });
+
+    const assignInspectionMutation = useMutation({
+        mutationFn: ({ id, staffAdminId }: { id: string; staffAdminId: string }) =>
+            inspectionService.assignInspection(id, staffAdminId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['inspection', variables.id] });
+            queryClient.invalidateQueries({ queryKey: ['inspections'] });
+        }
+    });
+
     return {
         useGetInspection,
         useAllInspections,
@@ -68,5 +87,9 @@ export const useInspection = () => {
         isDeclining: declineInspectionMutation.isPending,
         cancelInspection: cancelInspectionMutation.mutate,
         isCancelling: cancelInspectionMutation.isPending,
+        rescheduleInspection: rescheduleInspectionMutation.mutate,
+        isRescheduling: rescheduleInspectionMutation.isPending,
+        assignInspection: assignInspectionMutation.mutate,
+        isAssigning: assignInspectionMutation.isPending,
     };
 };

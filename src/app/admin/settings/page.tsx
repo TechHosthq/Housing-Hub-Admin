@@ -190,7 +190,7 @@ export default function AdminSettingsPage() {
                 {activeTab === "staff" && (
                     <button
                         onClick={() => setIsAddStaffModalOpen(true)}
-                        className="flex items-center gap-2 px-6 py-3.5 bg-[#002B7F] text-white rounded-[16px] font-bold text-[15px] hover:bg-opacity-90 transition-all shadow-md shadow-blue-900/10 font-montserrat"
+                        className="flex items-center gap-2 px-6 py-3.5 bg-[#0B2545] text-white rounded-[16px] font-bold text-[15px] hover:bg-opacity-90 transition-all shadow-md shadow-blue-900/10 font-montserrat"
                     >
                         <Plus size={18} />
                         Add Staff
@@ -211,13 +211,13 @@ export default function AdminSettingsPage() {
                                     key={item.id}
                                     onClick={() => setActiveTab(item.id)}
                                     className={`flex items-center gap-4 px-6 py-4 rounded-[16px] transition-all duration-300 group font-montserrat ${isActive
-                                        ? "bg-[#002B7F] text-white shadow-md shadow-blue-900/10"
+                                        ? "bg-[#0B2545] text-white shadow-md shadow-blue-900/10"
                                         : "text-[#1A1A1A] hover:bg-gray-50"
                                         }`}
                                 >
                                     <Icon
                                         size={20}
-                                        className={isActive ? "text-white" : "text-[#1A1A1A] group-hover:text-[#002B7F]"}
+                                        className={isActive ? "text-white" : "text-[#1A1A1A] group-hover:text-[#0B2545]"}
                                     />
                                     <span className={`text-[15px] font-bold ${isActive ? "text-white" : "text-[#1A1A1A]"}`}>
                                         {item.label}
@@ -238,7 +238,7 @@ export default function AdminSettingsPage() {
 
                             {isLoadingProfile ? (
                                 <div className="py-12 flex justify-center">
-                                    <Loader2 className="animate-spin text-[#002B7F] w-10 h-10" />
+                                    <Loader2 className="animate-spin text-[#0B2545] w-10 h-10" />
                                 </div>
                             ) : (
                                 <form onSubmit={handleSaveProfile} className="flex flex-col gap-6 text-left">
@@ -297,7 +297,7 @@ export default function AdminSettingsPage() {
                                     <button
                                         type="submit"
                                         disabled={updateProfileMutation.isPending}
-                                        className="w-fit px-12 py-4 bg-[#002B7F] text-white rounded-[16px] font-bold text-[16px] hover:bg-opacity-90 transition-all shadow-md mt-4 font-montserrat flex items-center gap-2 disabled:opacity-50"
+                                        className="w-fit px-12 py-4 bg-[#0B2545] text-white rounded-[16px] font-bold text-[16px] hover:bg-opacity-90 transition-all shadow-md mt-4 font-montserrat flex items-center gap-2 disabled:opacity-50"
                                     >
                                         {updateProfileMutation.isPending && <Loader2 className="animate-spin" size={18} />}
                                         Save Changes
@@ -316,7 +316,7 @@ export default function AdminSettingsPage() {
 
                             {isLoadingStaff ? (
                                 <div className="py-12 flex justify-center">
-                                    <Loader2 className="animate-spin text-[#002B7F] w-10 h-10" />
+                                    <Loader2 className="animate-spin text-[#0B2545] w-10 h-10" />
                                 </div>
                             ) : (
                                 <div className="overflow-x-auto">
@@ -473,7 +473,7 @@ export default function AdminSettingsPage() {
                                     <button
                                         type="submit"
                                         disabled={changePasswordMutation.isPending}
-                                        className="w-fit px-12 py-4 bg-[#002B7F] text-white rounded-full font-bold text-[16px] hover:bg-opacity-90 transition-all shadow-md font-montserrat flex items-center gap-2 disabled:opacity-50"
+                                        className="w-fit px-12 py-4 bg-[#0B2545] text-white rounded-full font-bold text-[16px] hover:bg-opacity-90 transition-all shadow-md font-montserrat flex items-center gap-2 disabled:opacity-50"
                                     >
                                         {changePasswordMutation.isPending && <Loader2 className="animate-spin" size={18} />}
                                         Update Password
@@ -496,7 +496,7 @@ export default function AdminSettingsPage() {
                                     </span>
                                     <button
                                         onClick={() => togglePreference("allAssigned")}
-                                        className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${preferences.allAssigned ? "bg-[#002B7F]" : "bg-gray-200"}`}
+                                        className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${preferences.allAssigned ? "bg-[#0B2545]" : "bg-gray-200"}`}
                                     >
                                         <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform duration-300 ${preferences.allAssigned ? "translate-x-7" : ""}`} />
                                     </button>
@@ -508,7 +508,7 @@ export default function AdminSettingsPage() {
                                     </span>
                                     <button
                                         onClick={() => togglePreference("activity")}
-                                        className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${preferences.activity ? "bg-[#002B7F]" : "bg-gray-200"}`}
+                                        className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${preferences.activity ? "bg-[#0B2545]" : "bg-gray-200"}`}
                                     >
                                         <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform duration-300 ${preferences.activity ? "translate-x-7" : ""}`} />
                                     </button>
@@ -520,7 +520,7 @@ export default function AdminSettingsPage() {
                                     </span>
                                     <button
                                         onClick={() => togglePreference("kycTasks")}
-                                        className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${preferences.kycTasks ? "bg-[#002B7F]" : "bg-gray-200"}`}
+                                        className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${preferences.kycTasks ? "bg-[#0B2545]" : "bg-gray-200"}`}
                                     >
                                         <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform duration-300 ${preferences.kycTasks ? "translate-x-7" : ""}`} />
                                     </button>
@@ -532,7 +532,7 @@ export default function AdminSettingsPage() {
                                     </span>
                                     <button
                                         onClick={() => togglePreference("listings")}
-                                        className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${preferences.listings ? "bg-[#002B7F]" : "bg-gray-200"}`}
+                                        className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${preferences.listings ? "bg-[#0B2545]" : "bg-gray-200"}`}
                                     >
                                         <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform duration-300 ${preferences.listings ? "translate-x-7" : ""}`} />
                                     </button>

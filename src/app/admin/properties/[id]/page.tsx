@@ -61,7 +61,7 @@ export default function PropertyInformationPage() {
     if (isLoadingProperty) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="animate-spin text-[#002B7F] w-12 h-12" />
+                <Loader2 className="animate-spin text-[#0B2545] w-12 h-12" />
             </div>
         );
     }
@@ -306,7 +306,7 @@ export default function PropertyInformationPage() {
 
                 {isLoadingInspections ? (
                     <div className="py-10 flex justify-center">
-                        <Loader2 className="animate-spin text-[#002B7F]" />
+                        <Loader2 className="animate-spin text-[#0B2545]" />
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -328,7 +328,7 @@ export default function PropertyInformationPage() {
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <span className="text-[10px] font-black uppercase px-2 py-0.5 bg-blue-100 text-[#002B7F] rounded">
+                                    <span className="text-[10px] font-black uppercase px-2 py-0.5 bg-blue-100 text-[#0B2545] rounded">
                                         ID: {inspection.inspectionId || inspection.id.slice(0, 6)}
                                     </span>
                                 </div>
@@ -343,7 +343,7 @@ export default function PropertyInformationPage() {
 
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
                 <Link
-                    href={`/admin/messages?recipientId=${property.ownerId}`}
+                    href={`/admin/messages?recipientId=${property.ownerId}${property.ownerName ? `&recipientName=${encodeURIComponent(property.ownerName)}` : ""}`}
                     className="flex-1 py-5 border-2 border-gray-200 text-[#1A1A1A] rounded-[16px] font-bold text-[16px] hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
                 >
                     <MessageSquare size={20} />
@@ -353,7 +353,7 @@ export default function PropertyInformationPage() {
                 <button
                     onClick={handleToggleStatus}
                     disabled={isPublishing || isUnpublishing}
-                    className="flex-1 py-5 bg-[#002B7F] text-white rounded-[16px] font-bold text-[16px] hover:bg-opacity-90 transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="flex-1 py-5 bg-[#0B2545] text-white rounded-[16px] font-bold text-[16px] hover:bg-opacity-90 transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                     {(isPublishing || isUnpublishing) && <Loader2 className="animate-spin" size={20} />}
                     {isPublished ? "Unpublish Property" : "Publish Property"}

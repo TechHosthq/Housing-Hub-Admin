@@ -19,7 +19,7 @@ export default function AdminNavbar() {
                 {/* Logo */}
                 <Link href="/admin" className="flex items-center">
                     <Image
-                        src="/images/logo.png"
+                        src="/images/logo.svg"
                         alt="Housing Hub Logo"
                         width={180}
                         height={45}
@@ -74,7 +74,7 @@ export default function AdminNavbar() {
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         className="flex items-center gap-2 cursor-pointer group"
                     >
-                        <div className="w-10 h-10 rounded-full bg-[#002B7F] flex items-center justify-center text-white font-black text-[14px] uppercase">
+                        <div className="w-10 h-10 rounded-full bg-[#0B2545] flex items-center justify-center text-white font-black text-[14px] uppercase">
                             AD
                         </div>
                         <span className="text-[14px] font-medium text-[#1A1A1A]">Admin</span>

@@ -125,7 +125,7 @@ export default function AdminInspectionsPage() {
             <div className="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden">
                 {isLoading ? (
                     <div className="flex justify-center py-16">
-                        <Loader2 className="animate-spin text-[#002B7F] w-12 h-12" />
+                        <Loader2 className="animate-spin text-[#0B2545] w-12 h-12" />
                     </div>
                 ) : inspections.length === 0 ? (
                     <div className="py-16 text-center text-gray-400 font-bold">
@@ -156,6 +156,11 @@ export default function AdminInspectionsPage() {
                                                 <span className="text-[11px] text-[#0095FF] font-black uppercase tracking-wider mt-1">
                                                     {inspection.inspectionId ?? inspection.id?.slice(0, 8).toUpperCase()}
                                                 </span>
+                                                {inspection.handedOffAt && (
+                                                    <span className={`inline-flex w-fit items-center text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 ${inspection.assignedStaffName ? "bg-[#F2F7FF] text-[#0B2545]" : "bg-amber-50 text-amber-600"}`}>
+                                                        {inspection.assignedStaffName ? `Assigned to ${inspection.assignedStaffName}` : "Handed off · Unassigned"}
+                                                    </span>
+                                                )}
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">

@@ -30,6 +30,11 @@ export interface Inspection {
     rescheduledTime: string | null;
     rescheduleNote: string | null;
     dateRequested?: string;
+    propertyOwnerId?: string | null;
+    propertyOwnerName?: string | null;
+    handedOffAt?: string | null;
+    assignedStaffId?: string | null;
+    assignedStaffName?: string | null;
 }
 
 export interface CreateInspectionRequest {

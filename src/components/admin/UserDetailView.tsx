@@ -143,7 +143,7 @@ export default function UserDetailView({ customer, kycType, onSuspend, isSuspend
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
                 <Link
-                    href={`/admin/messages?recipientId=${customer.id}`}
+                    href={`/admin/messages?recipientId=${customer.id}&recipientName=${encodeURIComponent(`${customer.firstName} ${customer.lastName}`)}`}
                     className="flex-1 py-5 border-2 border-gray-200 text-[#1A1A1A] rounded-[16px] font-bold text-[16px] hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
                 >
                     <MessageSquare size={20} />

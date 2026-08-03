@@ -166,7 +166,7 @@ export default function AdminPropertiesPage() {
                 <div className="bg-white border border-gray-100 rounded-[20px] overflow-hidden shadow-sm flex flex-col">
                     {isLoadingProperties ? (
                         <div className="flex justify-center py-16">
-                            <Loader2 className="animate-spin text-[#002B7F] w-12 h-12" />
+                            <Loader2 className="animate-spin text-[#0B2545] w-12 h-12" />
                         </div>
                     ) : properties.length === 0 ? (
                         <div className="py-16 text-center text-gray-400 font-bold">
@@ -261,7 +261,7 @@ export default function AdminPropertiesPage() {
                                 key={filter.value}
                                 onClick={() => handleInspectionFilterChange(filter.value)}
                                 className={`px-6 py-2 rounded-full text-[13px] font-bold transition-all ${inspectionFilter === filter.value
-                                    ? "bg-[#002B7F] text-white"
+                                    ? "bg-[#0B2545] text-white"
                                     : "bg-gray-50 text-[#999999] hover:bg-gray-100"
                                     }`}
                             >
@@ -274,7 +274,7 @@ export default function AdminPropertiesPage() {
                     <div className="bg-white border border-gray-100 rounded-[20px] overflow-hidden shadow-sm flex flex-col">
                         {isLoadingInspections ? (
                             <div className="flex justify-center py-16">
-                                <Loader2 className="animate-spin text-[#002B7F] w-12 h-12" />
+                                <Loader2 className="animate-spin text-[#0B2545] w-12 h-12" />
                             </div>
                         ) : filteredInspections.length === 0 ? (
                             <div className="py-16 text-center text-gray-400 font-bold">

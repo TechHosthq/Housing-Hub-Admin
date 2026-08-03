@@ -54,7 +54,7 @@ export default function Navbar() {
                 <div className="flex items-center">
                     <Link href="/" className="flex items-center" onClick={() => setIsMenuOpen(false)}>
                         <Image
-                            src="/images/logo.png"
+                            src="/images/logo.svg"
                             alt="Housing Hub Logo"
                             width={180}
                             height={45}
@@ -85,7 +85,7 @@ export default function Navbar() {
                                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                                 className="flex items-center gap-3 group"
                             >
-                                <div className="w-10 h-10 rounded-full bg-[#002D6B] flex items-center justify-center text-white font-black text-[14px] shadow-md group-hover:bg-[#0095FF] transition-colors">
+                                <div className="w-10 h-10 rounded-full bg-[#0B2545] flex items-center justify-center text-white font-black text-[14px] shadow-md group-hover:bg-[#0095FF] transition-colors">
                                     {initials}
                                 </div>
                                 <div className="flex flex-col items-start leading-none">
@@ -158,7 +158,7 @@ export default function Navbar() {
                                 <>
                                     {/* Mobile user info */}
                                     <div className="flex items-center gap-3 pb-2">
-                                        <div className="w-10 h-10 rounded-full bg-[#002D6B] flex items-center justify-center text-white font-black text-[14px]">
+                                        <div className="w-10 h-10 rounded-full bg-[#0B2545] flex items-center justify-center text-white font-black text-[14px]">
                                             {initials}
                                         </div>
                                         <div className="flex flex-col leading-none">

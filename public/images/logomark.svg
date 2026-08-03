@@ -1,0 +1,14 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Housing Hub">
+  <title>Housing Hub</title>
+
+  <!-- Navy tile -->
+  <rect width="64" height="64" rx="16" fill="#0B2545"/>
+
+  <!-- Architectural H: roofline + pillars + gold beam -->
+  <path d="M15 26 L32 14 L49 26"
+        stroke="#FFFFFF" stroke-width="3.6"
+        stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect x="18" y="26" width="7.5" height="24" rx="1.6" fill="#FFFFFF"/>
+  <rect x="38.5" y="26" width="7.5" height="24" rx="1.6" fill="#FFFFFF"/>
+  <rect x="25.5" y="34.5" width="13" height="6.5" fill="#C9A227"/>
+</svg>

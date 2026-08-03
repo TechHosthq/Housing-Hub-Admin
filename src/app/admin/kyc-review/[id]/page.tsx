@@ -191,7 +191,7 @@ export default function KYCReviewPage() {
                         <button
                             onClick={handleApprove}
                             disabled={isVerifyingKyc}
-                            className="flex-1 py-4 bg-[#002B7F] text-white rounded-xl font-bold text-[16px] hover:bg-[#001D56] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                            className="flex-1 py-4 bg-[#0B2545] text-white rounded-xl font-bold text-[16px] hover:bg-[#071A33] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                         >
                             {isVerifyingKyc && <Loader2 className="animate-spin" size={20} />}
                             Approve

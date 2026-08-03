@@ -61,6 +61,16 @@ const inspectionService = {
     cancelInspection: async (id: string): Promise<ApiResponse<boolean>> => {
         const response = await apiClient.put(`/api/AdminInspection/${id}/cancel`);
         return response.data;
+    },
+
+    rescheduleInspection: async (id: string, data: { rescheduledDate: string; rescheduledTime: string; note?: string | null }): Promise<InspectionResponse> => {
+        const response = await apiClient.put(`/api/AdminInspection/${id}/reschedule`, data);
+        return response.data;
+    },
+
+    assignInspection: async (id: string, staffAdminId: string): Promise<InspectionResponse> => {
+        const response = await apiClient.put(`/api/AdminInspection/${id}/assign`, { staffAdminId });
+        return response.data;
     }
 };
 

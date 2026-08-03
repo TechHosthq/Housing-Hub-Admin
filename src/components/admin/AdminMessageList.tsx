@@ -12,9 +12,12 @@ interface AdminMessageListProps {
     onThreadSelect: (id: string) => void;
     /** Deep-linked recipient with no existing conversation yet (e.g. "Message Owner"). */
     newRecipientId?: string | null;
+    /** Recipient's display name, passed alongside newRecipientId so the header
+     * doesn't have to wait for a conversation to exist before showing who this is. */
+    newRecipientName?: string | null;
 }
 
-export default function AdminMessageList({ viewMode, selectedId, onThreadSelect, newRecipientId }: AdminMessageListProps) {
+export default function AdminMessageList({ viewMode, selectedId, onThreadSelect, newRecipientId, newRecipientName }: AdminMessageListProps) {
     const { useConversations, useMessages, sendMessage, markAsRead } = useChat();
     const currentAdmin = useAuthStore((state) => state.user);
     const [searchQuery, setSearchQuery] = useState("");
@@ -87,7 +90,7 @@ export default function AdminMessageList({ viewMode, selectedId, onThreadSelect,
 
             {isLoadingConvs ? (
                 <div className="flex justify-center py-10">
-                    <Loader2 className="animate-spin text-[#002B7F]" />
+                    <Loader2 className="animate-spin text-[#0B2545]" />
                 </div>
             ) : filteredConversations.length === 0 ? (
                 <p className="text-center text-gray-400 text-[13px] font-medium py-10">No conversations found.</p>
@@ -145,7 +148,7 @@ export default function AdminMessageList({ viewMode, selectedId, onThreadSelect,
                     <>
                         <div className="px-8 py-5 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
                             <h2 className="text-[16px] font-bold text-[#1A1A1A] font-montserrat">
-                                {activeChat ? (activeChat.participantName || "Unknown User") : "New Message"}
+                                {activeChat ? (activeChat.participantName || "Unknown User") : (newRecipientName || "New Message")}
                             </h2>
                         </div>
 
@@ -158,7 +161,7 @@ export default function AdminMessageList({ viewMode, selectedId, onThreadSelect,
                                 </div>
                             ) : isLoadingMsgs ? (
                                 <div className="flex justify-center py-20">
-                                    <Loader2 className="animate-spin text-[#002B7F]" />
+                                    <Loader2 className="animate-spin text-[#0B2545]" />
                                 </div>
                             ) : (
                                 [...messages].reverse().map((msg) => {
@@ -167,7 +170,7 @@ export default function AdminMessageList({ viewMode, selectedId, onThreadSelect,
                                         <div key={msg.id} className={`flex ${isOutgoing ? "justify-end" : "justify-start"}`}>
                                             <div className="max-w-[70%] space-y-1">
                                                 <div className={`px-5 py-4 rounded-[12px] text-[13px] leading-relaxed shadow-sm ${isOutgoing
-                                                    ? "bg-[#002B7F] text-white"
+                                                    ? "bg-[#0B2545] text-white"
                                                     : "bg-white border border-gray-100 text-[#1A1A1A]"
                                                     }`}>
                                                     {msg.content}
@@ -194,7 +197,7 @@ export default function AdminMessageList({ viewMode, selectedId, onThreadSelect,
                                 <button
                                     type="submit"
                                     disabled={!messageInput.trim()}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-lg bg-[#002B7F] flex items-center justify-center text-white hover:bg-opacity-90 transition-all active:scale-95 shadow-md disabled:opacity-50"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-lg bg-[#0B2545] flex items-center justify-center text-white hover:bg-opacity-90 transition-all active:scale-95 shadow-md disabled:opacity-50"
                                 >
                                     <Send size={18} />
                                 </button>
