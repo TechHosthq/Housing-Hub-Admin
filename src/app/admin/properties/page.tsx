@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { MoreVertical, ChevronDown, Loader2 } from "lucide-react";
+import { MoreVertical, ChevronDown, Loader2, Plus } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useProperty } from "@/hooks/useProperty";
 import { useInspection } from "@/hooks/useInspection";
@@ -101,41 +102,56 @@ export default function AdminPropertiesPage() {
                     Property Management
                 </h1>
 
-                {/* Filter Dropdown */}
-                <div className="relative">
-                    <button
-                        onClick={() => setIsFilterOpen(!isFilterOpen)}
-                        className="flex items-center gap-4 px-6 py-3 bg-white border border-gray-100 rounded-[14px] shadow-sm hover:bg-gray-50 transition-all group"
+                <div className="flex items-center gap-3">
+                    <Link
+                        href="/admin/properties/duplicates"
+                        className="px-6 py-3 rounded-[14px] border border-gray-200 text-[#1A1A1A] font-bold text-[14px] hover:bg-gray-50 transition-all"
                     >
-                        <span className="text-[14px] font-medium text-gray-400">
-                            {isInspections ? "All Inspections" : "All properties"}
-                        </span>
-                        <ChevronDown
-                            size={18}
-                            className={`text-gray-400 transition-transform duration-300 ${isFilterOpen ? "rotate-180" : ""}`}
-                        />
-                    </button>
-                    {isFilterOpen && (
-                        <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-10 animate-in fade-in zoom-in-95 duration-200">
-                            {(isInspections ? ["All Inspections", "Confirmed", "Pending", "Completed"] : ["All properties", "Published", "Posted"]).map((option) => (
-                                <button
-                                    key={option}
-                                    className="w-full text-left px-4 py-2.5 text-[14px] font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-                                    onClick={() => {
-                                        setIsFilterOpen(false);
-                                        if (isInspections) {
-                                            if (option === "All Inspections") setInspectionFilter("All");
-                                            else if (option === "Confirmed") setInspectionFilter(InspectionStatus.Confirmed.toString());
-                                            else if (option === "Pending") setInspectionFilter(InspectionStatus.Pending.toString());
-                                            else if (option === "Completed") setInspectionFilter(InspectionStatus.Completed.toString());
-                                        }
-                                    }}
-                                >
-                                    {option}
+                        Duplicate Listings
+                    </Link>
+                    <Link
+                        href="/admin/properties/add"
+                        className="flex items-center gap-2 px-6 py-3 bg-[#0B2545] text-white rounded-[14px] font-bold text-[14px] hover:bg-[#071A33] transition-all"
+                    >
+                        <Plus size={18} /> Add Property
+                    </Link>
+
+                    {/* Filter Dropdown */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setIsFilterOpen(!isFilterOpen)}
+                            className="flex items-center gap-4 px-6 py-3 bg-white border border-gray-100 rounded-[14px] shadow-sm hover:bg-gray-50 transition-all group"
+                        >
+                            <span className="text-[14px] font-medium text-gray-400">
+                                {isInspections ? "All Inspections" : "All properties"}
+                            </span>
+                            <ChevronDown
+                                size={18}
+                                className={`text-gray-400 transition-transform duration-300 ${isFilterOpen ? "rotate-180" : ""}`}
+                            />
+                        </button>
+                        {isFilterOpen && (
+                            <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-10 animate-in fade-in zoom-in-95 duration-200">
+                                {(isInspections ? ["All Inspections", "Confirmed", "Pending", "Completed"] : ["All properties", "Published", "Posted"]).map((option) => (
+                                    <button
+                                        key={option}
+                                        className="w-full text-left px-4 py-2.5 text-[14px] font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                                        onClick={() => {
+                                            setIsFilterOpen(false);
+                                            if (isInspections) {
+                                                if (option === "All Inspections") setInspectionFilter("All");
+                                                else if (option === "Confirmed") setInspectionFilter(InspectionStatus.Confirmed.toString());
+                                                else if (option === "Pending") setInspectionFilter(InspectionStatus.Pending.toString());
+                                                else if (option === "Completed") setInspectionFilter(InspectionStatus.Completed.toString());
+                                            }
+                                        }}
+                                    >
+                                        {option}
                                 </button>
                             ))}
                         </div>
                     )}
+                    </div>
                 </div>
             </div>
 

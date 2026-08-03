@@ -87,6 +87,13 @@ export const useProperty = () => {
         }
     });
 
+    const dismissDuplicateFlagMutation = useMutation({
+        mutationFn: (id: string) => propertyService.dismissDuplicateFlag(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['properties'] });
+        }
+    });
+
     const publishPropertyMutation = useMutation({
         mutationFn: (id: string) => propertyService.publishProperty(id),
         onSuccess: (_, id) => {
@@ -153,5 +160,7 @@ export const useProperty = () => {
         isUnverifying: unverifyPropertyMutation.isPending,
         uploadFiles: uploadFilesMutation.mutate,
         isUploading: uploadFilesMutation.isPending,
+        dismissDuplicateFlag: dismissDuplicateFlagMutation.mutate,
+        isDismissingDuplicateFlag: dismissDuplicateFlagMutation.isPending,
     };
 };

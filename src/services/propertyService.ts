@@ -11,7 +11,8 @@ import {
     PropertiesResponse,
     PropertyDashboardResponse,
     PropertyFilesResponse,
-    PropertyAddressResponse
+    PropertyAddressResponse,
+    CreatePropertyResponse
 } from '@/types/property';
 import { Property } from "@/types";
 import propertiesData from "@/data/properties.json";
@@ -36,7 +37,7 @@ export const propertyService = {
         return response.data;
     },
 
-    createProperty: async (data: CreatePropertyRequest): Promise<PropertyResponse> => {
+    createProperty: async (data: CreatePropertyRequest): Promise<CreatePropertyResponse> => {
         const formData = new FormData();
         formData.append('Title', data.title);
         formData.append('Description', data.description);
@@ -54,13 +55,18 @@ export const propertyService = {
         formData.append('PropertyAddress.State', data.state);
         formData.append('PropertyAddress.Country', data.country);
         formData.append('PropertyAddress.PostalCode', data.postalCode);
-        formData.append('PropertyAddress.PropertyId', ''); // Usually handled by backend
-        
+        formData.append('ConfirmDuplicate', String(data.confirmDuplicate ?? false));
+
         data.files.forEach((file) => {
             formData.append('Files', file);
         });
 
-        const response = await apiClient.post<PropertyResponse>('/api/AdminProperty', formData);
+        const response = await apiClient.post<CreatePropertyResponse>('/api/AdminProperty', formData);
+        return response.data;
+    },
+
+    dismissDuplicateFlag: async (id: string): Promise<ApiResponse<boolean>> => {
+        const response = await apiClient.put<ApiResponse<boolean>>(`/api/AdminProperty/${id}/dismiss-duplicate-flag`);
         return response.data;
     },
 

@@ -16,6 +16,7 @@ export const useOwner = () => {
         search?: string;
         isVerified?: boolean;
         isActive?: boolean;
+        isManaged?: boolean;
         type?: number;
     } = {}) => useQuery({
         queryKey: ['owners', params],
@@ -46,6 +47,14 @@ export const useOwner = () => {
         }
     });
 
+    const setManagedMutation = useMutation({
+        mutationFn: ({ id, isManaged }: { id: string, isManaged: boolean }) => ownerService.setManaged(id, isManaged),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['owner', variables.id] });
+            queryClient.invalidateQueries({ queryKey: ['owners'] });
+        }
+    });
+
     return {
         useGetOwner,
         useAllOwners,
@@ -55,5 +64,7 @@ export const useOwner = () => {
         isSuspendingOwner: suspendOwnerMutation.isPending,
         reactivateOwner: reactivateOwnerMutation.mutate,
         isReactivatingOwner: reactivateOwnerMutation.isPending,
+        setManaged: setManagedMutation.mutate,
+        isSettingManaged: setManagedMutation.isPending,
     };
 };

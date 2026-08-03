@@ -1,17 +1,25 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useOwner } from "@/hooks/useOwner";
+import adminAccountService from "@/services/adminAccountService";
 import UserDetailView from "@/components/admin/UserDetailView";
 
 export default function OwnerDetailPage() {
     const params = useParams();
     const id = params.id as string;
 
-    const { useGetOwner, suspendOwner, isSuspendingOwner, reactivateOwner, isReactivatingOwner } = useOwner();
+    const { useGetOwner, suspendOwner, isSuspendingOwner, reactivateOwner, isReactivatingOwner, setManaged, isSettingManaged } = useOwner();
     const { data: response, isLoading } = useGetOwner(id);
     const owner = response?.data;
+
+    const { data: profile } = useQuery({
+        queryKey: ["admin-profile"],
+        queryFn: () => adminAccountService.getProfile(),
+    });
+    const isSuperAdmin = profile?.role === "SuperAdmin";
 
     if (isLoading) {
         return (
@@ -33,6 +41,9 @@ export default function OwnerDetailPage() {
             isSuspending={isSuspendingOwner}
             onReactivate={() => reactivateOwner(id)}
             isReactivating={isReactivatingOwner}
+            isSuperAdmin={isSuperAdmin}
+            onToggleManaged={() => setManaged({ id, isManaged: !owner.isManagedByHousingHub })}
+            isTogglingManaged={isSettingManaged}
         />
     );
 }

@@ -162,6 +162,11 @@ export default function AdminOwnersPage() {
                                                     <Ban size={12} /> Suspended
                                                 </span>
                                             )}
+                                            {owner.isManagedByHousingHub && (
+                                                <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-black uppercase bg-blue-50 text-[#0095FF]">
+                                                    Managed
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className="flex items-center gap-6 text-[14px] font-medium text-gray-500">
