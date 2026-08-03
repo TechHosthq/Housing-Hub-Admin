@@ -30,6 +30,7 @@ export interface Customer extends User {
     kycPending?: boolean;
     dateJoined?: string;
     pendingInspections?: number;
+    isManagedByHousingHub?: boolean;
 }
 
 export interface UpdateProfileRequest {

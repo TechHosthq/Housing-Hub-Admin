@@ -71,6 +71,9 @@ export interface PropertyDetail {
     thumbnailUrl?: string | null;
     inspectionCount?: number;
     unpublishReason?: string | null;
+    isFlaggedDuplicate?: boolean;
+    possibleDuplicateOfPropertyId?: string | null;
+    possibleDuplicateOfTitle?: string | null;
 }
 
 export interface PropertyDashboardStats {
@@ -98,6 +101,18 @@ export interface CreatePropertyRequest {
     country: string;
     postalCode: string;
     files: File[];
+    confirmDuplicate?: boolean;
+}
+
+export interface PossibleDuplicateProperty {
+    propertyId: string;
+    title: string;
+    address: string;
+}
+
+export interface CreatePropertyResultDto {
+    property: PropertyDetail | null;
+    possibleDuplicate: PossibleDuplicateProperty | null;
 }
 
 export interface UpdatePropertyRequest {
@@ -128,6 +143,7 @@ export interface PropertyQueryParams {
     pageSize?: number;
     search?: string;
     features?: number;
+    flaggedDuplicateOnly?: boolean;
 }
 
 export type PropertyResponse = ApiResponse<PropertyDetail>;
@@ -135,3 +151,4 @@ export type PropertiesResponse = ApiResponse<PaginatedResponse<PropertyDetail>>;
 export type PropertyDashboardResponse = ApiResponse<PropertyDashboardStats>;
 export type PropertyFilesResponse = ApiResponse<PropertyFile[]>;
 export type PropertyAddressResponse = ApiResponse<PropertyAddress>;
+export type CreatePropertyResponse = ApiResponse<CreatePropertyResultDto>;

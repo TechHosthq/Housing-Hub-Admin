@@ -14,9 +14,12 @@ interface UserDetailViewProps {
     isSuspending: boolean;
     onReactivate: () => void;
     isReactivating: boolean;
+    isSuperAdmin?: boolean;
+    onToggleManaged?: () => void;
+    isTogglingManaged?: boolean;
 }
 
-export default function UserDetailView({ customer, kycType, onSuspend, isSuspending, onReactivate, isReactivating }: UserDetailViewProps) {
+export default function UserDetailView({ customer, kycType, onSuspend, isSuspending, onReactivate, isReactivating, isSuperAdmin, onToggleManaged, isTogglingManaged }: UserDetailViewProps) {
     const router = useRouter();
 
     const isActive = customer.isActive !== false;
@@ -64,11 +67,29 @@ export default function UserDetailView({ customer, kycType, onSuspend, isSuspend
                                 <Ban size={12} /> Suspended
                             </span>
                         )}
+                        {kycType === "owner" && customer.isManagedByHousingHub && (
+                            <span className="flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-black uppercase bg-blue-50 text-[#0095FF]">
+                                Managed
+                            </span>
+                        )}
                     </div>
                     <p className="text-[15px] font-medium text-gray-500">{customer.email} &bull; {customer.phoneNumber}</p>
                     <p className="text-[13px] font-medium text-gray-400">
                         Joined {joined ? format(new Date(joined), "MMM dd, yyyy") : "N/A"}
                     </p>
+
+                    {kycType === "owner" && isSuperAdmin && (
+                        <div className="flex items-center gap-3 mt-3 justify-center sm:justify-start">
+                            <span className="text-[13px] font-bold text-gray-500">Managed by HousingHub</span>
+                            <button
+                                onClick={onToggleManaged}
+                                disabled={isTogglingManaged}
+                                className={`relative w-14 h-7 rounded-full transition-colors duration-300 disabled:opacity-50 ${customer.isManagedByHousingHub ? "bg-[#0B2545]" : "bg-gray-200"}`}
+                            >
+                                <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform duration-300 ${customer.isManagedByHousingHub ? "translate-x-7" : ""}`} />
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 

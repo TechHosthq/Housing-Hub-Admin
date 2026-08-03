@@ -13,6 +13,7 @@ export const ownerService = {
         search?: string;
         isVerified?: boolean;
         isActive?: boolean;
+        isManaged?: boolean;
         type?: number;
     } = {}): Promise<CustomersResponse> => {
         const response = await apiClient.get('/api/AdminOwner', {
@@ -22,6 +23,7 @@ export const ownerService = {
                 Search: params.search,
                 IsVerified: params.isVerified,
                 IsActive: params.isActive,
+                IsManaged: params.isManaged,
                 type: params.type
             }
         });
@@ -42,6 +44,11 @@ export const ownerService = {
 
     reactivateOwner: async (id: string): Promise<ApiResponse<boolean>> => {
         const response = await apiClient.put(`/api/AdminOwner/${id}/reactivate`);
+        return response.data;
+    },
+
+    setManaged: async (id: string, isManaged: boolean): Promise<ApiResponse<boolean>> => {
+        const response = await apiClient.put(`/api/AdminOwner/${id}/managed`, null, { params: { isManaged } });
         return response.data;
     }
 };
