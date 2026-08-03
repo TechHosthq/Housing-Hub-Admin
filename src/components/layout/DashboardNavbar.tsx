@@ -29,7 +29,7 @@ export default function DashboardNavbar() {
                 {/* Logo */}
                 <Link href="/" className="flex items-center">
                     <Image
-                        src="/images/logo.png"
+                        src="/images/logo.svg"
                         alt="Housing Hub Logo"
                         width={180}
                         height={45}
@@ -88,7 +88,7 @@ export default function DashboardNavbar() {
                             className="flex items-center gap-3 pl-6 border-l border-gray-100 cursor-pointer group"
                         >
                             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-                                <div className="w-full h-full bg-[#E9F3FF] flex items-center justify-center text-[#002B7F] font-black text-[14px] uppercase">
+                                <div className="w-full h-full bg-[#E9F3FF] flex items-center justify-center text-[#0B2545] font-black text-[14px] uppercase">
                                     {currentUser?.firstName?.[0]}{currentUser?.lastName?.[0] || "U"}
                                 </div>
                             </div>

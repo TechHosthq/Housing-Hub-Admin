@@ -135,7 +135,7 @@ export default function AdminKYCReviewPage() {
                 </div>
                 <button
                     onClick={handleSearchSubmit}
-                    className="bg-[#002B7F] text-white px-8 py-3.5 rounded-full font-bold text-[14px] hover:bg-[#001D56] transition-all flex items-center gap-2"
+                    className="bg-[#0B2545] text-white px-8 py-3.5 rounded-full font-bold text-[14px] hover:bg-[#071A33] transition-all flex items-center gap-2"
                 >
                     <Search size={18} />
                     Search
@@ -151,7 +151,7 @@ export default function AdminKYCReviewPage() {
                             key={t.label}
                             onClick={() => handleTabChange(idx)}
                             className={`px-6 py-2.5 rounded-full text-[13px] font-bold transition-all ${
-                                activeTab === idx ? "bg-[#002B7F] text-white" : "bg-[#F2F2F2] text-[#999999] hover:bg-gray-200"
+                                activeTab === idx ? "bg-[#0B2545] text-white" : "bg-[#F2F2F2] text-[#999999] hover:bg-gray-200"
                             }`}
                         >
                             {t.label} {activeTab === idx && !isLoading ? `(${count})` : ""}
@@ -164,7 +164,7 @@ export default function AdminKYCReviewPage() {
             <div className="flex flex-col gap-4 w-full">
                 {isLoading ? (
                     <div className="py-20 flex justify-center">
-                        <Loader2 className="animate-spin text-[#002B7F] w-10 h-10" />
+                        <Loader2 className="animate-spin text-[#0B2545] w-10 h-10" />
                     </div>
                 ) : paginatedItems.length === 0 ? (
                     <div className="py-20 text-center text-gray-400 font-bold">

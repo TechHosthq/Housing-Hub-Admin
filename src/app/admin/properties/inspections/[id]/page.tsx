@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Calendar, Clock, User, CheckCircle2, Loader2, FileText, Ban } from "lucide-react";
 import Image from "next/image";
 import { useInspection } from "@/hooks/useInspection";
+import adminAccountService from "@/services/adminAccountService";
 import { format } from "date-fns";
 import { InspectionStatus } from "@/types/inspection";
 import SuccessModal from "@/components/admin/SuccessModal";
@@ -33,16 +35,66 @@ export default function InspectionDetailsPage() {
     const params = useParams();
     const id = params.id as string;
     const [successModal, setSuccessModal] = useState({ isOpen: false, title: "", message: "" });
+    const [isAssignPickerOpen, setIsAssignPickerOpen] = useState(false);
+    const [selectedStaffId, setSelectedStaffId] = useState("");
+    const [isReschedulingOpen, setIsReschedulingOpen] = useState(false);
+    const [rescheduleDate, setRescheduleDate] = useState("");
+    const [rescheduleTime, setRescheduleTime] = useState("");
+    const [rescheduleNote, setRescheduleNote] = useState("");
 
     const {
         useGetInspection,
         confirmInspection, isConfirming,
         declineInspection, isDeclining,
+        assignInspection, isAssigning,
+        rescheduleInspection, isRescheduling,
     } = useInspection();
 
     const { data: inspectionResponse, isLoading, error } = useGetInspection(id);
+    const { data: profile } = useQuery({
+        queryKey: ["admin-profile"],
+        queryFn: () => adminAccountService.getProfile(),
+    });
+    const isSuperAdmin = profile?.role === "SuperAdmin";
 
     const inspection = inspectionResponse?.data;
+
+    const { data: staffMembers = [] } = useQuery({
+        queryKey: ["admin-staff"],
+        queryFn: () => adminAccountService.getStaff(),
+        enabled: isSuperAdmin && !!inspection?.handedOffAt && !inspection?.assignedStaffName,
+    });
+
+    const handleAssign = () => {
+        if (!id || !selectedStaffId) return;
+        assignInspection({ id, staffAdminId: selectedStaffId }, {
+            onSuccess: () => {
+                setIsAssignPickerOpen(false);
+                setSuccessModal({
+                    isOpen: true,
+                    title: "Staff Assigned",
+                    message: "The inspection has been assigned to the selected staff member.",
+                });
+            },
+        });
+    };
+
+    const handleReschedule = () => {
+        if (!id || !rescheduleDate || !rescheduleTime) return;
+        rescheduleInspection({ id, data: { rescheduledDate: rescheduleDate, rescheduledTime: `${rescheduleTime}:00`, note: rescheduleNote || null } }, {
+            onSuccess: () => {
+                setIsReschedulingOpen(false);
+                setRescheduleDate("");
+                setRescheduleTime("");
+                setRescheduleNote("");
+                setSuccessModal({
+                    isOpen: true,
+                    title: "Inspection Rescheduled",
+                    message: "Both parties have been notified of the new date and time.",
+                });
+            },
+        });
+    };
 
     const handleConfirm = () => {
         if (!id) return;
@@ -178,20 +230,73 @@ export default function InspectionDetailsPage() {
                     </div>
                 </div>
 
-                {/* Assigned Staff / Context info */}
-                <div className="flex flex-col gap-3 w-full lg:w-auto">
-                    <span className="text-[12px] font-black text-[#1A1A1A] uppercase tracking-wider">
-                        Assigned Coordinator
-                    </span>
-                    <div className="flex items-center gap-3 px-6 py-3.5 bg-[#F2F7FF] rounded-xl min-w-[280px]">
-                        <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-gray-400">
-                            <User size={14} strokeWidth={2.5} stroke="#0095FF" />
-                        </div>
-                        <span className="text-[15px] font-bold text-[#0095FF]">
-                            Real-estacy Coordinator
+                {/* Assigned Staff / Context info — only relevant once the owner has handed this off */}
+                {inspection.handedOffAt && (
+                    <div className="flex flex-col gap-3 w-full lg:w-auto">
+                        <span className="text-[12px] font-black text-[#1A1A1A] uppercase tracking-wider">
+                            Assigned Staff
                         </span>
+                        {inspection.assignedStaffName ? (
+                            <div className="flex items-center gap-3 px-6 py-3.5 bg-[#F2F7FF] rounded-xl min-w-[280px]">
+                                <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-gray-400">
+                                    <User size={14} strokeWidth={2.5} stroke="#0095FF" />
+                                </div>
+                                <span className="text-[15px] font-bold text-[#0095FF]">
+                                    {inspection.assignedStaffName}
+                                </span>
+                            </div>
+                        ) : isSuperAdmin ? (
+                            isAssignPickerOpen ? (
+                                <div className="flex flex-col gap-2 min-w-[280px]">
+                                    <select
+                                        value={selectedStaffId}
+                                        onChange={(e) => setSelectedStaffId(e.target.value)}
+                                        className="px-4 py-3 rounded-xl border border-gray-200 text-[14px] font-medium text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#0095FF]/10"
+                                    >
+                                        <option value="">Choose a staff member</option>
+                                        {staffMembers.filter((s) => s.isActive).map((s) => (
+                                            <option key={s.id} value={s.id}>{s.firstName} {s.lastName}</option>
+                                        ))}
+                                    </select>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setIsAssignPickerOpen(false)}
+                                            className="flex-1 py-2.5 rounded-full border border-gray-200 text-[13px] font-bold text-gray-500 hover:bg-gray-50 transition-all"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={handleAssign}
+                                            disabled={!selectedStaffId || isAssigning}
+                                            className="flex-1 py-2.5 rounded-full bg-[#0095FF] text-white text-[13px] font-bold hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-1"
+                                        >
+                                            {isAssigning && <Loader2 size={14} className="animate-spin" />}
+                                            Assign
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => setIsAssignPickerOpen(true)}
+                                    className="flex items-center gap-3 px-6 py-3.5 bg-[#F2F7FF] rounded-xl min-w-[280px] hover:bg-[#E9F3FF] transition-all"
+                                >
+                                    <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-gray-400">
+                                        <User size={14} strokeWidth={2.5} stroke="#0095FF" />
+                                    </div>
+                                    <span className="text-[15px] font-bold text-[#0095FF]">
+                                        Assign a staff member
+                                    </span>
+                                </button>
+                            )
+                        ) : (
+                            <div className="flex items-center gap-3 px-6 py-3.5 bg-gray-50 rounded-xl min-w-[280px]">
+                                <span className="text-[14px] font-medium text-gray-400">
+                                    Awaiting staff assignment
+                                </span>
+                            </div>
+                        )}
                     </div>
-                </div>
+                )}
             </div>
 
             {/* Info Cards Row */}
@@ -284,6 +389,71 @@ export default function InspectionDetailsPage() {
                             Accept & Confirm
                         </button>
                     </div>
+                </div>
+            )}
+
+            {/* Reschedule Section (Pending or Confirmed inspections can be rescheduled) */}
+            {(inspection.status === InspectionStatus.Pending || inspection.status === InspectionStatus.Confirmed) && (
+                <div className="bg-white border border-gray-100 rounded-[20px] p-8 shadow-sm flex flex-col gap-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="text-[20px] font-bold text-[#1A1A1A] mb-1">
+                                Reschedule Inspection
+                            </h3>
+                            <p className="text-gray-400 font-medium text-[14px]">
+                                Propose a new date and time — both the renter and owner will be notified.
+                            </p>
+                        </div>
+                        {!isReschedulingOpen && (
+                            <button
+                                onClick={() => setIsReschedulingOpen(true)}
+                                className="px-6 py-3 border-2 border-[#0095FF] text-[#0095FF] rounded-full font-bold text-[14px] hover:bg-blue-50 transition-all shrink-0"
+                            >
+                                Reschedule
+                            </button>
+                        )}
+                    </div>
+
+                    {isReschedulingOpen && (
+                        <div className="flex flex-col gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <input
+                                    type="date"
+                                    value={rescheduleDate}
+                                    onChange={(e) => setRescheduleDate(e.target.value)}
+                                    className="px-4 py-3 rounded-xl border border-gray-200 text-[14px] font-medium text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#0095FF]/10"
+                                />
+                                <input
+                                    type="time"
+                                    value={rescheduleTime}
+                                    onChange={(e) => setRescheduleTime(e.target.value)}
+                                    className="px-4 py-3 rounded-xl border border-gray-200 text-[14px] font-medium text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#0095FF]/10"
+                                />
+                            </div>
+                            <textarea
+                                value={rescheduleNote}
+                                onChange={(e) => setRescheduleNote(e.target.value)}
+                                placeholder="Optional note for both parties..."
+                                className="px-4 py-3 rounded-xl border border-gray-200 text-[14px] font-medium text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#0095FF]/10 resize-none h-24"
+                            />
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => setIsReschedulingOpen(false)}
+                                    className="flex-1 py-3 rounded-full border border-gray-200 font-bold text-[14px] text-gray-500 hover:bg-gray-50 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleReschedule}
+                                    disabled={!rescheduleDate || !rescheduleTime || isRescheduling}
+                                    className="flex-1 py-3 rounded-full bg-[#0095FF] text-white font-bold text-[14px] hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {isRescheduling && <Loader2 size={16} className="animate-spin" />}
+                                    Confirm New Time
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

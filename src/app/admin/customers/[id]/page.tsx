@@ -16,7 +16,7 @@ export default function CustomerDetailPage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="animate-spin text-[#002B7F] w-12 h-12" />
+                <Loader2 className="animate-spin text-[#0B2545] w-12 h-12" />
             </div>
         );
     }
