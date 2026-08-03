@@ -19,6 +19,12 @@ export enum PropertyLeaseType {
     Sale = 1
 }
 
+// Must match backend HousingHub.Model.Enums.PropertyFileType exactly.
+export enum PropertyFileType {
+    Image = 1,
+    Video = 2
+}
+
 export interface PropertyFile {
     id: string;
     dateCreated: string;
