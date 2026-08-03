@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ChevronLeft, Calendar, Loader2, ArrowRight, ShieldCheck, ShieldOff, Trash2, MessageSquare } from "lucide-react";
-import Image from "next/image";
 import SuccessModal from "@/components/admin/SuccessModal";
+import PropertyGallery from "@/components/admin/PropertyGallery";
 import DeletePropertyModal from "@/components/admin/DeletePropertyModal";
 import UnpublishPropertyModal from "@/components/admin/UnpublishPropertyModal";
 import VerifyPropertyModal from "@/components/admin/VerifyPropertyModal";
@@ -133,7 +133,6 @@ export default function PropertyInformationPage() {
         });
     };
 
-    const propertyImage = property.files?.[0]?.fileUrl || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=600";
     const propertyLocation = property.propertyAddress
         ? `${property.propertyAddress.place || ""}, ${property.propertyAddress.city || ""}, ${property.propertyAddress.state || ""}`
         : property.address || "Location N/A";
@@ -165,15 +164,8 @@ export default function PropertyInformationPage() {
             </h1>
 
             {/* Header Card */}
-            <div className="bg-white border border-gray-100 rounded-[20px] p-8 shadow-sm flex flex-col sm:flex-row items-center gap-6">
-                <div className="w-[120px] h-[120px] rounded-[16px] bg-gray-100 relative overflow-hidden flex-shrink-0">
-                    <Image
-                        src={propertyImage}
-                        alt={property.title || "Property"}
-                        fill
-                        className="object-cover"
-                    />
-                </div>
+            <div className="bg-white border border-gray-100 rounded-[20px] p-8 shadow-sm flex flex-col gap-6">
+                <PropertyGallery files={property.files || []} />
                 <div className="flex flex-col gap-2 flex-1">
                     <div className="flex items-center gap-3">
                         <h2 className="text-[24px] font-black text-[#1A1A1A] font-montserrat tracking-tight leading-none">

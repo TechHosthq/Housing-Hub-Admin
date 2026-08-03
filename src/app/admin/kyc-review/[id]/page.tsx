@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import RejectKYCModal from "@/components/admin/RejectKYCModal";
+import DocumentPreviewModal from "@/components/ui/DocumentPreviewModal";
 import { useCustomer } from "@/hooks/useCustomer";
 import { useOwner } from "@/hooks/useOwner";
 import { format } from "date-fns";
@@ -31,6 +32,7 @@ export default function KYCReviewPage() {
     
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
     const [status, setStatus] = useState<"Pending" | "Verified" | "Rejected">("Pending");
+    const [isDocumentPreviewOpen, setIsDocumentPreviewOpen] = useState(false);
 
     useEffect(() => {
         if (customer) {
@@ -76,7 +78,14 @@ export default function KYCReviewPage() {
                 onClose={() => setIsRejectModalOpen(false)}
                 onReject={handleReject}
             />
-            
+
+            {isDocumentPreviewOpen && (
+                <DocumentPreviewModal
+                    url={customer.idDocumentUrl}
+                    onClose={() => setIsDocumentPreviewOpen(false)}
+                />
+            )}
+
             <button
                 onClick={() => router.back()}
                 className="flex items-center gap-2 text-[#0095FF] font-bold text-[15px] hover:gap-3 transition-all w-fit"
@@ -153,11 +162,10 @@ export default function KYCReviewPage() {
                     <div className="flex flex-col gap-2">
                         <label className="text-[12px] font-black text-[#1A1A1A] uppercase tracking-wider">Uploaded Document</label>
                         {customer.idDocumentUrl ? (
-                            <a 
-                                href={customer.idDocumentUrl} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="p-4 bg-[#E9F3FF] border border-[#0095FF]/20 rounded-xl flex items-center justify-between hover:bg-[#D9EAFF] transition-colors"
+                            <button
+                                type="button"
+                                onClick={() => setIsDocumentPreviewOpen(true)}
+                                className="p-4 bg-[#E9F3FF] border border-[#0095FF]/20 rounded-xl flex items-center justify-between hover:bg-[#D9EAFF] transition-colors text-left"
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-[#0095FF]">
@@ -165,10 +173,10 @@ export default function KYCReviewPage() {
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-[14px] font-bold text-[#1A1A1A]">View ID Document</span>
-                                        <span className="text-[12px] text-gray-500 font-medium">Click to open</span>
+                                        <span className="text-[12px] text-gray-500 font-medium">Click to preview</span>
                                     </div>
                                 </div>
-                            </a>
+                            </button>
                         ) : (
                             <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-400 text-sm italic">
                                 No document uploaded

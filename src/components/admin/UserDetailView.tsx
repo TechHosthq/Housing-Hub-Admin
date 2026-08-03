@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Ban, RefreshCw, MessageSquare, User as UserIcon, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { Customer } from "@/types/customer";
+import DocumentPreviewModal from "@/components/ui/DocumentPreviewModal";
 
 interface UserDetailViewProps {
     customer: Customer;
@@ -21,6 +23,7 @@ interface UserDetailViewProps {
 
 export default function UserDetailView({ customer, kycType, onSuspend, isSuspending, onReactivate, isReactivating, isSuperAdmin, onToggleManaged, isTogglingManaged }: UserDetailViewProps) {
     const router = useRouter();
+    const [isDocumentPreviewOpen, setIsDocumentPreviewOpen] = useState(false);
 
     const isActive = customer.isActive !== false;
     const status = customer.isKycVerified
@@ -116,12 +119,23 @@ export default function UserDetailView({ customer, kycType, onSuspend, isSuspend
                     {customer.idDocumentUrl && (
                         <div className="flex flex-col gap-3">
                             <span className="text-[12px] font-black text-[#B3B3B3] uppercase tracking-wider">ID Document</span>
-                            <a href={customer.idDocumentUrl} target="_blank" rel="noopener noreferrer" className="block w-full max-w-[320px]">
+                            <button
+                                type="button"
+                                onClick={() => setIsDocumentPreviewOpen(true)}
+                                className="block w-full max-w-[320px] cursor-zoom-in"
+                            >
                                 <div className="relative w-full h-[200px] rounded-[16px] overflow-hidden border border-gray-100 bg-gray-50">
                                     <Image src={customer.idDocumentUrl} alt="ID Document" fill className="object-cover" />
                                 </div>
-                            </a>
+                            </button>
                         </div>
+                    )}
+
+                    {isDocumentPreviewOpen && (
+                        <DocumentPreviewModal
+                            url={customer.idDocumentUrl}
+                            onClose={() => setIsDocumentPreviewOpen(false)}
+                        />
                     )}
                 </div>
             </div>
