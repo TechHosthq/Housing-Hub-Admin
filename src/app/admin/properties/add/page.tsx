@@ -12,8 +12,11 @@ import SuccessModal from "@/components/admin/SuccessModal";
 
 const PROPERTY_TYPES = ["House", "Apartment", "Guesthouse", "Flat", "Duplex"];
 
-// Matches the backend's ValidateFile allowlist exactly (PropertyCommandService).
-const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+// File extensions match the backend's ValidateFile allowlist exactly (PropertyCommandService).
+// Size is capped well below the backend's own 10MB limit because uploads go through API
+// Gateway + Lambda, which has a hard 6MB payload ceiling (worse once multipart/base64
+// overhead is added) — stopgap until uploads move to direct-to-S3 presigned URLs.
+const MAX_FILE_SIZE_BYTES = 4 * 1024 * 1024;
 const ALLOWED_FILE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".mp4", ".mov", ".avi", ".mkv", ".webm"];
 
 export default function AdminAddPropertyPage() {
@@ -84,7 +87,7 @@ export default function AdminAddPropertyPage() {
                 continue;
             }
             if (file.size > MAX_FILE_SIZE_BYTES) {
-                error = `${file.name}: file is larger than 10MB.`;
+                error = `${file.name}: file is larger than 4MB.`;
                 continue;
             }
             validFiles.push(file);
@@ -443,7 +446,7 @@ export default function AdminAddPropertyPage() {
                             </div>
                             <span className="text-[15px] font-bold text-gray-400">Upload Images or Videos</span>
                             <p className="text-[11px] font-bold text-gray-300 mt-2 uppercase tracking-wide text-center px-4">
-                                JPG, PNG, GIF, WEBP, BMP images or MP4, MOV, AVI, MKV, WEBM videos, max 10MB (up to 10 files)
+                                JPG, PNG, GIF, WEBP, BMP images or MP4, MOV, AVI, MKV, WEBM videos, max 4MB (up to 10 files)
                             </p>
                         </div>
                         <input
