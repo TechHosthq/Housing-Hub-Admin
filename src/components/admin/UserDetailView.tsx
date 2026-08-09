@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Ban, RefreshCw, MessageSquare, User as UserIcon, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { Customer } from "@/types/customer";
+import customerService from "@/services/customerService";
 import DocumentPreviewModal from "@/components/ui/DocumentPreviewModal";
 
 interface UserDetailViewProps {
@@ -24,6 +25,32 @@ interface UserDetailViewProps {
 export default function UserDetailView({ customer, kycType, onSuspend, isSuspending, onReactivate, isReactivating, isSuperAdmin, onToggleManaged, isTogglingManaged }: UserDetailViewProps) {
     const router = useRouter();
     const [isDocumentPreviewOpen, setIsDocumentPreviewOpen] = useState(false);
+
+    // KYC documents live in a private bucket, so customer.idDocumentUrl is an opaque
+    // object key. Exchange it for a short-lived presigned URL only when the reviewer
+    // actually opens the document — fetching on page load would waste most of the
+    // link's ten-minute lifetime before anyone looks at it.
+    const [documentUrl, setDocumentUrl] = useState<string | null>(null);
+    const [isLoadingDocument, setIsLoadingDocument] = useState(false);
+    const [documentError, setDocumentError] = useState("");
+
+    const openDocument = async () => {
+        setDocumentError("");
+        setIsLoadingDocument(true);
+        try {
+            const response = await customerService.getKycDocumentUrl(customer.id);
+            if (response.isSuccessful && response.data) {
+                setDocumentUrl(response.data);
+                setIsDocumentPreviewOpen(true);
+            } else {
+                setDocumentError(response.message || "Could not load the document.");
+            }
+        } catch {
+            setDocumentError("Could not load the document.");
+        } finally {
+            setIsLoadingDocument(false);
+        }
+    };
 
     const isActive = customer.isActive !== false;
     const status = customer.isKycVerified
@@ -121,20 +148,23 @@ export default function UserDetailView({ customer, kycType, onSuspend, isSuspend
                             <span className="text-[12px] font-black text-[#B3B3B3] uppercase tracking-wider">ID Document</span>
                             <button
                                 type="button"
-                                onClick={() => setIsDocumentPreviewOpen(true)}
-                                className="block w-full max-w-[320px] cursor-zoom-in"
+                                onClick={openDocument}
+                                disabled={isLoadingDocument}
+                                className="flex items-center gap-2 w-fit px-5 py-3 rounded-full border border-gray-200 text-[13px] font-bold text-[#0B2545] hover:bg-gray-50 transition-colors disabled:opacity-60"
                             >
-                                <div className="relative w-full h-[200px] rounded-[16px] overflow-hidden border border-gray-100 bg-gray-50">
-                                    <Image src={customer.idDocumentUrl} alt="ID Document" fill className="object-cover" />
-                                </div>
+                                {isLoadingDocument && <Loader2 size={15} className="animate-spin" />}
+                                {isLoadingDocument ? "Preparing…" : "View ID Document"}
                             </button>
+                            {documentError && (
+                                <span className="text-[12px] font-bold text-red-500">{documentError}</span>
+                            )}
                         </div>
                     )}
 
-                    {isDocumentPreviewOpen && (
+                    {isDocumentPreviewOpen && documentUrl && (
                         <DocumentPreviewModal
-                            url={customer.idDocumentUrl}
-                            onClose={() => setIsDocumentPreviewOpen(false)}
+                            url={documentUrl}
+                            onClose={() => { setIsDocumentPreviewOpen(false); setDocumentUrl(null); }}
                         />
                     )}
                 </div>
