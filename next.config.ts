@@ -1,8 +1,30 @@
 import type { NextConfig } from "next";
 
-const API_ORIGIN =
-  process.env.NEXT_PUBLIC_ADMIN_API_URL ??
-  'https://3tgjb2crdf.execute-api.af-south-1.amazonaws.com';
+/**
+ * Scheme + host + port of a URL, with any path discarded.
+ *
+ * This matters more than it looks. A CSP source expression may carry a path, and
+ * when it does the browser matches on it — and a path that does not end in `/`
+ * matches only that exact path. NEXT_PUBLIC_ADMIN_API_URL is
+ * `https://<id>.execute-api.af-south-1.amazonaws.com/admin`, so feeding it to
+ * connect-src verbatim permitted exactly one URL and refused every real API call
+ * underneath it. Every request from the dashboard failed with (blocked:csp).
+ *
+ * Falls back rather than throwing: a malformed value should degrade the policy,
+ * not fail the build.
+ */
+const toOrigin = (url: string | undefined, fallback: string): string => {
+  try {
+    return new URL(url ?? fallback).origin;
+  } catch {
+    return fallback;
+  }
+};
+
+const API_ORIGIN = toOrigin(
+  process.env.NEXT_PUBLIC_ADMIN_API_URL,
+  'https://3tgjb2crdf.execute-api.af-south-1.amazonaws.com',
+);
 
 const S3_ORIGIN = 'https://housinghub-files-dev.s3.af-south-1.amazonaws.com';
 
@@ -69,8 +91,12 @@ const nextConfig: NextConfig = {
     }
     return [
       {
+        // NEXT_PUBLIC_ADMIN_API_URL, not NEXT_PUBLIC_API_BASE_URL — the latter is
+        // not set in this app, so enabling the proxy previously produced a
+        // destination of literally "undefined/:path*". Uses the full value rather
+        // than the origin, because the /admin path base is part of the route.
         source: '/api/proxy/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_BASE_URL}/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/:path*`,
       },
     ];
   },
