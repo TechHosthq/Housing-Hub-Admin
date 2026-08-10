@@ -13,8 +13,12 @@ const S3_ORIGIN = 'https://housinghub-files-dev.s3.af-south-1.amazonaws.com';
  * third-party embeds. The one iframe is DocumentPreviewModal, which renders a
  * presigned S3 URL for KYC documents — hence S3 in frame-src.
  *
- * Report-Only first. Watch the console for violations, then rename the header to
- * `Content-Security-Policy` to enforce.
+ * NOW ENFORCING, having shipped Report-Only first.
+ *
+ * SMOKE TEST BEFORE YOU TRUST IT, with the console open: sign in with an OTP,
+ * load the dashboard, open a customer and preview their KYC document (the S3
+ * iframe), view a property with photos. Any `Refused to ...` line is a directive
+ * that needs widening.
  *
  * Known weakness: 'unsafe-inline' on script-src, needed for Next's inline
  * bootstrap. Removing it requires per-request nonces via middleware.
@@ -25,6 +29,9 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self' data:",
   `img-src 'self' data: blob: https://images.unsplash.com ${S3_ORIGIN}`,
+  // Listing videos are reviewed here too, and would otherwise fall through to
+  // default-src and refuse to play.
+  `media-src 'self' blob: ${S3_ORIGIN}`,
   `connect-src 'self' ${API_ORIGIN}`,
   // KYC document previews are presigned S3 URLs rendered in an iframe.
   `frame-src 'self' ${S3_ORIGIN}`,
@@ -32,11 +39,12 @@ const contentSecurityPolicy = [
   "base-uri 'self'",
   "form-action 'self'",
   "object-src 'none'",
+  "worker-src 'self' blob:",
   "upgrade-insecure-requests",
 ].filter(Boolean).join('; ');
 
 const securityHeaders = [
-  { key: 'Content-Security-Policy-Report-Only', value: contentSecurityPolicy },
+  { key: 'Content-Security-Policy', value: contentSecurityPolicy },
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
   // The admin dashboard was clickjackable — an attacker could frame it and trick a
   // signed-in admin into clicking through destructive actions.
