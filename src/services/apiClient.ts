@@ -4,7 +4,14 @@ import { resolveApiError } from '@/utils/errorResolver';
 import { useAuthStore } from '@/store/useAuthStore';
 
 const isProxyEnabled = typeof window !== 'undefined' && process.env.NEXT_PUBLIC_ENABLE_PROXY === 'true';
-const API_BASE_URL = 'https://3tgjb2crdf.execute-api.af-south-1.amazonaws.com/admin';
+
+// Configurable per environment. This was previously a hardcoded API Gateway URL
+// with no override, so a staging or local build silently pointed at the deployed
+// admin API. The fallback keeps existing deployments working until the variable
+// is set, but NEXT_PUBLIC_ADMIN_API_URL should be defined in every environment.
+const API_BASE_URL =
+    process.env.NEXT_PUBLIC_ADMIN_API_URL
+    ?? 'https://3tgjb2crdf.execute-api.af-south-1.amazonaws.com/admin';
 
 const baseURL = isProxyEnabled ? '/api/proxy' : API_BASE_URL;
 if (typeof window === 'undefined') {

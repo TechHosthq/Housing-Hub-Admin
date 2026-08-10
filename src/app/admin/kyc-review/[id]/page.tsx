@@ -6,6 +6,7 @@ import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import RejectKYCModal from "@/components/admin/RejectKYCModal";
 import DocumentPreviewModal from "@/components/ui/DocumentPreviewModal";
+import customerService from "@/services/customerService";
 import { useCustomer } from "@/hooks/useCustomer";
 import { useOwner } from "@/hooks/useOwner";
 import { format } from "date-fns";
@@ -33,6 +34,31 @@ export default function KYCReviewPage() {
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
     const [status, setStatus] = useState<"Pending" | "Verified" | "Rejected">("Pending");
     const [isDocumentPreviewOpen, setIsDocumentPreviewOpen] = useState(false);
+
+    // idDocumentUrl is now an opaque key into a private bucket. Exchange it for a
+    // short-lived presigned URL at the moment the reviewer opens the document.
+    const [documentUrl, setDocumentUrl] = useState<string | null>(null);
+    const [isLoadingDocument, setIsLoadingDocument] = useState(false);
+    const [documentError, setDocumentError] = useState("");
+
+    const openDocument = async () => {
+        if (!customer) return;
+        setDocumentError("");
+        setIsLoadingDocument(true);
+        try {
+            const response = await customerService.getKycDocumentUrl(customer.id);
+            if (response.isSuccessful && response.data) {
+                setDocumentUrl(response.data);
+                setIsDocumentPreviewOpen(true);
+            } else {
+                setDocumentError(response.message || "Could not load the document.");
+            }
+        } catch {
+            setDocumentError("Could not load the document.");
+        } finally {
+            setIsLoadingDocument(false);
+        }
+    };
 
     useEffect(() => {
         if (customer) {
@@ -79,10 +105,10 @@ export default function KYCReviewPage() {
                 onReject={handleReject}
             />
 
-            {isDocumentPreviewOpen && (
+            {isDocumentPreviewOpen && documentUrl && (
                 <DocumentPreviewModal
-                    url={customer.idDocumentUrl}
-                    onClose={() => setIsDocumentPreviewOpen(false)}
+                    url={documentUrl}
+                    onClose={() => { setIsDocumentPreviewOpen(false); setDocumentUrl(null); }}
                 />
             )}
 
@@ -164,8 +190,9 @@ export default function KYCReviewPage() {
                         {customer.idDocumentUrl ? (
                             <button
                                 type="button"
-                                onClick={() => setIsDocumentPreviewOpen(true)}
-                                className="p-4 bg-[#E9F3FF] border border-[#0095FF]/20 rounded-xl flex items-center justify-between hover:bg-[#D9EAFF] transition-colors text-left"
+                                onClick={openDocument}
+                                disabled={isLoadingDocument}
+                                className="p-4 bg-[#E9F3FF] border border-[#0095FF]/20 rounded-xl flex items-center justify-between hover:bg-[#D9EAFF] transition-colors text-left disabled:opacity-60"
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-[#0095FF]">
@@ -173,7 +200,9 @@ export default function KYCReviewPage() {
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-[14px] font-bold text-[#1A1A1A]">View ID Document</span>
-                                        <span className="text-[12px] text-gray-500 font-medium">Click to preview</span>
+                                        <span className="text-[12px] text-gray-500 font-medium">
+                                            {documentError || (isLoadingDocument ? "Preparing…" : "Click to preview")}
+                                        </span>
                                     </div>
                                 </div>
                             </button>

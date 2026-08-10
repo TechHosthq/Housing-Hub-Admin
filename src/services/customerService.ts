@@ -59,6 +59,19 @@ const customerService = {
         return response.data;
     },
 
+    /**
+     * Fetches a short-lived viewing link for a customer's KYC identity document.
+     *
+     * The documents now live in a private bucket, so `customer.idDocumentUrl` holds an
+     * opaque object key rather than something renderable. This mints a presigned URL
+     * valid for ten minutes; fetch it when the reviewer opens the document, not when
+     * the page loads, so the link isn't already half-expired.
+     */
+    getKycDocumentUrl: async (id: string): Promise<ApiResponse<string>> => {
+        const response = await apiClient.get(`/api/AdminCustomer/${id}/kyc/document-url`);
+        return response.data;
+    },
+
     verifyKyc: async (id: string, approve: boolean, reason?: string): Promise<KycResponse> => {
         const params = new URLSearchParams({ approve: String(approve) });
         if (reason) params.set('reason', reason);

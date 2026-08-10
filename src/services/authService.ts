@@ -26,6 +26,24 @@ const authService = {
     refreshToken: async (data: RefreshTokenRequest): Promise<RefreshTokenResponse> => {
         const response = await apiClient.post('/api/AdminAuth/refresh-token', data);
         return response.data;
+    },
+
+    /**
+     * Ends the session server-side by revoking the refresh token.
+     *
+     * Signing out previously only cleared local state, leaving the refresh token valid
+     * for its full 30-day life — a real exposure on a shared or unattended machine.
+     *
+     * Never throws: the client discards its state regardless, and a network failure
+     * must not trap an admin on a screen they've asked to leave.
+     */
+    logout: async (refreshToken: string | null, allSessions = false): Promise<void> => {
+        if (!refreshToken) return;
+        try {
+            await apiClient.post('/api/AdminAuth/logout', { refreshToken, allSessions });
+        } catch {
+            // Intentionally swallowed — see above.
+        }
     }
 };
 
