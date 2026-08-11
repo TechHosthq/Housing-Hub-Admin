@@ -141,7 +141,10 @@ export default withSentryConfig(nextConfig, {
 
   silent: !process.env.CI,
   widenClientFileUpload: true,
-  hideSourceMaps: true,
+  // hideSourceMaps was renamed: this is the same "upload, then delete locally"
+  // behavior, just nested under sourcemaps now (and already the default —
+  // set explicitly so the intent stays documented here).
+  sourcemaps: { deleteSourcemapsAfterUpload: true },
   disableLogger: true,
 
   // Routes reports through our own origin so ad blockers, which block sentry.io
