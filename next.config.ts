@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 /**
  * Scheme + host + port of a URL, with any path discarded.
@@ -25,6 +26,18 @@ const API_ORIGIN = toOrigin(
   process.env.NEXT_PUBLIC_ADMIN_API_URL,
   'https://3tgjb2crdf.execute-api.af-south-1.amazonaws.com',
 );
+
+/**
+ * Sentry's ingest endpoint, derived from the DSN.
+ *
+ * The CSP is enforcing, so without this the browser refuses every error report —
+ * and that failure is invisible in the worst way: monitoring that looks installed,
+ * reports nothing, and leaves you believing there are no errors. Derived from the
+ * DSN because the ingest host encodes the org id and region.
+ */
+const SENTRY_ORIGIN = process.env.NEXT_PUBLIC_SENTRY_DSN
+  ? toOrigin(process.env.NEXT_PUBLIC_SENTRY_DSN, '')
+  : '';
 
 const S3_ORIGIN = 'https://housinghub-files-dev.s3.af-south-1.amazonaws.com';
 
@@ -54,7 +67,7 @@ const contentSecurityPolicy = [
   // Listing videos are reviewed here too, and would otherwise fall through to
   // default-src and refuse to play.
   `media-src 'self' blob: ${S3_ORIGIN}`,
-  `connect-src 'self' ${API_ORIGIN}`,
+  `connect-src 'self' ${API_ORIGIN} ${SENTRY_ORIGIN}`.trim(),
   // KYC document previews are presigned S3 URLs rendered in an iframe.
   `frame-src 'self' ${S3_ORIGIN}`,
   "frame-ancestors 'none'",
@@ -116,4 +129,25 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+/**
+ * Sentry build-time wrapper — uploads source maps so stack traces name real files.
+ * Needs SENTRY_AUTH_TOKEN / SENTRY_ORG / SENTRY_PROJECT at BUILD time (Vercel env
+ * vars, not runtime). Absent locally, hence `silent`.
+ */
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  // hideSourceMaps was renamed: this is the same "upload, then delete locally"
+  // behavior, just nested under sourcemaps now (and already the default —
+  // set explicitly so the intent stays documented here).
+  sourcemaps: { deleteSourcemapsAfterUpload: true },
+  disableLogger: true,
+
+  // Routes reports through our own origin so ad blockers, which block sentry.io
+  // by default, do not silently drop them.
+  tunnelRoute: '/monitoring',
+});
