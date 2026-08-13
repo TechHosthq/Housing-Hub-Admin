@@ -55,6 +55,12 @@ export default function AdminNavbar() {
                         Property
                     </Link>
                     <Link
+                        href="/admin/verification"
+                        className={`${isActive("/admin/verification") ? "text-[#0095FF]" : "text-[#1A1A1A]"} font-medium text-[14px] hover:text-[#0095FF] transition-colors`}
+                    >
+                        Verification
+                    </Link>
+                    <Link
                         href="/admin/messages"
                         className={`${isActive("/admin/messages") ? "text-[#0095FF]" : "text-[#1A1A1A]"} font-medium text-[14px] hover:text-[#0095FF] transition-colors`}
                     >
