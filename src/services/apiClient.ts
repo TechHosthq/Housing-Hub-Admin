@@ -7,11 +7,28 @@ const isProxyEnabled = typeof window !== 'undefined' && process.env.NEXT_PUBLIC_
 
 // Configurable per environment. This was previously a hardcoded API Gateway URL
 // with no override, so a staging or local build silently pointed at the deployed
-// admin API. The fallback keeps existing deployments working until the variable
-// is set, but NEXT_PUBLIC_ADMIN_API_URL should be defined in every environment.
-const API_BASE_URL =
-    process.env.NEXT_PUBLIC_ADMIN_API_URL
-    ?? 'https://3tgjb2crdf.execute-api.af-south-1.amazonaws.com/admin';
+// admin API.
+//
+// The fallback is now local-only. In a production build an unset variable throws
+// rather than defaulting to dev: this dashboard approves verification cases and
+// promotes staff, and a reviewer acting on the wrong environment while believing
+// they are on the right one is the worst failure this app has. `next build`
+// evaluates this, so it surfaces in CI, not in front of a reviewer.
+const resolveApiBaseUrl = (): string => {
+    const configured = process.env.NEXT_PUBLIC_ADMIN_API_URL;
+    if (configured) return configured;
+
+    if (process.env.NODE_ENV === 'production') {
+        throw new Error(
+            'NEXT_PUBLIC_ADMIN_API_URL is not set. Set it on this Vercel environment — '
+            + 'refusing to fall back to the dev admin API in a production build.',
+        );
+    }
+
+    return 'https://3tgjb2crdf.execute-api.af-south-1.amazonaws.com/admin';
+};
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 const baseURL = isProxyEnabled ? '/api/proxy' : API_BASE_URL;
 if (typeof window === 'undefined') {
