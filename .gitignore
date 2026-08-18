@@ -43,3 +43,6 @@ next-env.d.ts
 
 # local staging for deletions (fs blocks unlink)
 .deleted-scratch/
+
+# Claude Code — personal, machine-specific permission grants
+.claude/settings.local.json
