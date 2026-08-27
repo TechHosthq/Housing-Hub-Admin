@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useProperty } from "@/hooks/useProperty";
 import { useInspection } from "@/hooks/useInspection";
 import Pagination from "@/components/admin/Pagination";
+import { PropertyFileType } from "@/types/property";
 import { format } from "date-fns";
 import { InspectionStatus } from "@/types/inspection";
 
@@ -192,7 +193,13 @@ export default function AdminPropertiesPage() {
                         <>
                             <div className="flex flex-col gap-4 p-6">
                                 {paginatedProperties.map((property) => {
-                                    const propertyImage = property.thumbnailUrl || property.files?.[0]?.fileUrl || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=300";
+                                    // Must be an image: files[0] can be a video, and next/image answers an .mp4
+                                    // with 400 INVALID_IMAGE_OPTIMIZE_REQUEST, which renders as a broken
+                                    // thumbnail. thumbnailUrl is on the DTO but nothing populates it, so
+                                    // this branch is always the one taken.
+                                    const propertyImage = property.thumbnailUrl
+                                        || property.files?.find(f => f.type === PropertyFileType.Image)?.fileUrl
+                                        || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=300";
                                     const propertyLocation = property.propertyAddress
                                         ? `${property.propertyAddress.place || ""}, ${property.propertyAddress.city || ""}, ${property.propertyAddress.state || ""}`
                                         : property.address || "Location N/A";
