@@ -219,6 +219,20 @@ export default function PropertyInformationPage() {
                             {property.description}
                         </p>
                     </div>
+                    {/* Only where the lister stated a count. Null means they never did —
+                        every listing predating the field reads that way — and rendering
+                        it as "0" would show a reviewer a claim nobody made. */}
+                    {(property.bedrooms != null || property.bathrooms != null) && (
+                        <div className="flex justify-between items-start pb-4 border-b border-gray-50">
+                            <span className="text-[12px] font-black text-[#B3B3B3] uppercase tracking-wider">Rooms</span>
+                            <span className="text-[14px] font-bold text-[#1A1A1A]">
+                                {[
+                                    property.bedrooms != null ? `${property.bedrooms} bed` : null,
+                                    property.bathrooms != null ? `${property.bathrooms} bath` : null,
+                                ].filter(Boolean).join(" · ")}
+                            </span>
+                        </div>
+                    )}
                     <div className="flex justify-between items-start pb-4 border-b border-gray-50">
                         <span className="text-[12px] font-black text-[#B3B3B3] uppercase tracking-wider">Status</span>
                         <span className="text-[14px] font-bold text-[#1A1A1A]">{availabilityStatusLabels[property.availability] ?? "N/A"}</span>
