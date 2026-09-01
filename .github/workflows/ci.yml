@@ -48,9 +48,14 @@ jobs:
           NEXT_PUBLIC_S3_ORIGIN: https://housinghub-files-dev.s3.af-south-1.amazonaws.com
         run: npm run build
 
-      # Not blocking yet: ~62 errors and ~42 warnings today. Far more tractable than
-      # the consumer app's ~476, so this is the one to clear first — then drop
-      # continue-on-error and it becomes a real gate.
-      - name: Lint (non-blocking)
-        continue-on-error: true
+      # Blocking. Errors are at zero; 41 warnings remain and do not fail the build.
+      #
+      # Two rules are set to "warn" in eslint.config.mjs rather than fixed —
+      # react-hooks/set-state-in-effect (10) and react-hooks/static-components (2).
+      # Both are real, and both need state to be derived differently rather than
+      # annotated away, in an auth guard, a role context and a settings prefill.
+      # That is a behavioural change in the app that approves KYC, and it is not
+      # verifiable without signing in and walking the review flow. They stay visible
+      # as warnings; raise them back to "error" once cleared.
+      - name: Lint
         run: npm run lint

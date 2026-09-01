@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import authService from '@/services/authService';
+import type { User } from "@/types/auth";
 import { useAuthStore } from '@/store/useAuthStore';
 import { RequestOtpRequest, VerifyOtpRequest } from '@/types/auth';
 
@@ -18,8 +19,10 @@ export const useAuth = () => {
             // (not the wrapped ApiResponse<AuthData> shape)
             const token = response?.token;
             if (token) {
+                // The admin API returns the user flat alongside the tokens rather
+                // than nested, so the rest of the object *is* the user.
                 const { token: _tok, refreshToken, ...user } = response;
-                setAuth(user as any, token, refreshToken);
+                setAuth(user as User, token, refreshToken);
             }
         },
     });

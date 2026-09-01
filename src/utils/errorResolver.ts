@@ -64,8 +64,11 @@ const flatten = (value: unknown): string[] => {
   return [];
 };
 
-export const resolveApiError = (error: any): string[] => {
-  const data = error?.response?.data as ApiErrorResponse | undefined;
+export const resolveApiError = (error: unknown): string[] => {
+  // `unknown` in, so narrow rather than reaching in. Everything below already
+  // treats a missing or wrong-shaped body as "no body".
+  const response = (error as { response?: { data?: unknown } } | null | undefined)?.response;
+  const data = response?.data as ApiErrorResponse | undefined;
 
   // No body at all: a network failure, a CORS rejection, or a payload refused by
   // the gateway before it reached the app. axios's text for these is not fit to
