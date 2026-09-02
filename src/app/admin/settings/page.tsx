@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import adminAccountService from "@/services/adminAccountService";
+import type { StaffMember } from "@/services/adminAccountService";
 import SuccessModal from "@/components/admin/SuccessModal";
 import AddStaffModal from "@/components/admin/AddStaffModal";
 import DeleteStaffModal from "@/components/admin/DeleteStaffModal";
@@ -36,7 +37,7 @@ export default function AdminSettingsPage() {
     // Staff Management State
     const [isAddStaffModalOpen, setIsAddStaffModalOpen] = useState(false);
     const [isDeleteStaffModalOpen, setIsDeleteStaffModalOpen] = useState(false);
-    const [selectedStaff, setSelectedStaff] = useState<any>(null);
+    const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
 
     // Feedback State
     const [showSuccess, setShowSuccess] = useState(false);
@@ -158,7 +159,7 @@ export default function AdminSettingsPage() {
         }
     });
 
-    const handleAddStaff = (newStaff: any) => {
+    const handleAddStaff = (newStaff: { firstName: string; lastName: string; email: string; role: string }) => {
         createStaffMutation.mutate({
             firstName: newStaff.firstName,
             lastName: newStaff.lastName,

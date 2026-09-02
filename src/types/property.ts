@@ -58,6 +58,15 @@ export interface PropertyDetail {
     availability: AvailabilityStatus;
     propertyLeaseType: PropertyLeaseType;
     features: number;
+    /**
+     * Bedroom count, or null when the lister never stated one.
+     *
+     * Null is not zero. Land has no bedrooms; a listing created before the field
+     * existed simply never said. Render nothing for null rather than "0".
+     */
+    bedrooms?: number | null;
+    /** Bathroom count, or null when the lister never stated one. */
+    bathrooms?: number | null;
     contactPersonName: string | null;
     contactPersonEmail: string | null;
     contactPersonPhoneNumber: string | null;
@@ -106,6 +115,8 @@ export interface CreatePropertyRequest {
     state: string;
     country: string;
     postalCode: string;
+    bedrooms?: number | null;
+    bathrooms?: number | null;
     files: File[];
     confirmDuplicate?: boolean;
 }

@@ -69,8 +69,11 @@ export default function LoginForm() {
 
     const renderError = (error: unknown) => {
         if (!error) return null;
-        const err = error as any;
-        const messages = resolveApiError(err?.data ? { response: err } : err);
+        // A thrown axios error already carries `response`; a rejected 200-with-
+        // isSuccessful-false carries `data` at the top level, and resolveApiError
+        // expects the axios shape either way.
+        const hasTopLevelData = typeof error === "object" && error !== null && "data" in error;
+        const messages = resolveApiError(hasTopLevelData ? { response: error } : error);
         return (
             <div className="p-3 text-xs text-red-500 bg-red-50 rounded-lg text-center">
                 {messages.length === 1 ? messages[0] : (

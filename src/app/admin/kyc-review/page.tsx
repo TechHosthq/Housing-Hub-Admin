@@ -63,11 +63,17 @@ export default function AdminKYCReviewPage() {
         : pendingOwners;
 
     // Get items based on active tab
-    let allItems: any[] = [];
+    // Customers and owners share the queue, told apart by `type`. Typed as the
+    // union rather than any[], so the discriminator cannot be misspelled.
+    type QueueItem =
+        | (typeof filteredCustomers[number] & { type: "customer" })
+        | (typeof filteredOwners[number] & { type: "owner" });
+
+    let allItems: QueueItem[] = [];
     if (tab.type === "all") {
         allItems = [
-            ...filteredCustomers.map(c => ({ ...c, type: "customer" })),
-            ...filteredOwners.map(o => ({ ...o, type: "owner" })),
+            ...filteredCustomers.map(c => ({ ...c, type: "customer" as const })),
+            ...filteredOwners.map(o => ({ ...o, type: "owner" as const })),
         ];
     } else if (tab.type === "customer") {
         allItems = filteredCustomers.map(c => ({ ...c, type: "customer" }));
@@ -175,7 +181,7 @@ export default function AdminKYCReviewPage() {
                         const isCustomer = item.type === "customer";
                         const name = `${item.firstName} ${item.lastName}`;
                         const email = item.email;
-                        const submittedDate = item.kycSubmittedAt || item.createdAt;
+                        const submittedDate = item.kycSubmittedAt || item.dateCreated;
 
                         return (
                             <div

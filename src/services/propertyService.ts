@@ -55,6 +55,12 @@ export const propertyService = {
         formData.append('PropertyAddress.State', data.state);
         formData.append('PropertyAddress.Country', data.country);
         formData.append('PropertyAddress.PostalCode', data.postalCode);
+
+        // Appended only when stated — an empty form field binds to 0, and "0 bedrooms"
+        // is a different claim from "not stated".
+        if (data.bedrooms != null) formData.append('Bedrooms', String(data.bedrooms));
+        if (data.bathrooms != null) formData.append('Bathrooms', String(data.bathrooms));
+
         formData.append('ConfirmDuplicate', String(data.confirmDuplicate ?? false));
 
         data.files.forEach((file) => {
