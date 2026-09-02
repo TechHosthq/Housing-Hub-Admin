@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { CircleAlert, Copy, Loader2, Receipt, ShieldCheck } from "lucide-react";
+import { CircleAlert, Copy, Loader2, Receipt, RotateCcw, ShieldCheck } from "lucide-react";
 import Pagination from "@/components/admin/Pagination";
+import RefundPaymentModal from "@/components/admin/RefundPaymentModal";
 import { usePayment } from "@/hooks/usePayment";
 import {
     AdminPayment,
@@ -29,6 +30,7 @@ const TABS: { label: string; status?: PaymentStatus; flaggedOnly?: boolean }[] =
     { label: "Paid", status: PaymentStatus.Successful },
     { label: "Pending", status: PaymentStatus.Pending },
     { label: "Failed", status: PaymentStatus.Failed },
+    { label: "Refunded", status: PaymentStatus.Refunded },
 ];
 
 const STATUS_STYLES: Record<number, string> = {
@@ -37,6 +39,8 @@ const STATUS_STYLES: Record<number, string> = {
     [PaymentStatus.Failed]: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300",
     [PaymentStatus.Abandoned]: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300",
     [PaymentStatus.Flagged]: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
+    [PaymentStatus.RefundPending]: "bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400",
+    [PaymentStatus.Refunded]: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300",
 };
 
 export default function AdminPaymentsPage() {
@@ -44,6 +48,7 @@ export default function AdminPaymentsPage() {
 
     const [activeTab, setActiveTab] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
+    const [refunding, setRefunding] = useState<AdminPayment | null>(null);
 
     const tab = TABS[activeTab];
 
@@ -130,7 +135,7 @@ export default function AdminPaymentsPage() {
             ) : (
                 <>
                     <div className="overflow-x-auto rounded-[18px] border border-gray-100 dark:border-gray-800">
-                        <table className="w-full min-w-[900px]">
+                        <table className="w-full min-w-[1000px]">
                             <thead className="bg-gray-50 dark:bg-gray-900/50">
                                 <tr className="text-left text-[11px] font-bold uppercase tracking-wide text-gray-400">
                                     <th className="px-5 py-4">Reference</th>
@@ -139,11 +144,16 @@ export default function AdminPaymentsPage() {
                                     <th className="px-5 py-4">Amount</th>
                                     <th className="px-5 py-4">Status</th>
                                     <th className="px-5 py-4">When</th>
+                                    <th className="px-5 py-4" />
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                                 {payments.map((payment) => (
-                                    <PaymentRow key={payment.id} payment={payment} />
+                                    <PaymentRow
+                                        key={payment.id}
+                                        payment={payment}
+                                        onRefund={() => setRefunding(payment)}
+                                    />
                                 ))}
                             </tbody>
                         </table>
@@ -162,12 +172,21 @@ export default function AdminPaymentsPage() {
                     )}
                 </>
             )}
+
+            {refunding && (
+                <RefundPaymentModal payment={refunding} onClose={() => setRefunding(null)} />
+            )}
         </div>
     );
 }
 
-function PaymentRow({ payment }: { payment: AdminPayment }) {
+function PaymentRow({ payment, onRefund }: { payment: AdminPayment; onRefund: () => void }) {
     const isFlagged = payment.status === PaymentStatus.Flagged;
+
+    // Matches the server's rule. A pending or failed payment has nothing to send
+    // back, and one already refunded must not offer the button again.
+    const isRefundable =
+        payment.status === PaymentStatus.Successful || payment.status === PaymentStatus.Flagged;
 
     return (
         <>
@@ -221,12 +240,29 @@ function PaymentRow({ payment }: { payment: AdminPayment }) {
                         <span className="block text-[11px] text-gray-400">started</span>
                     )}
                 </td>
+                <td className="px-5 py-4 text-right">
+                    {isRefundable && (
+                        <button
+                            type="button"
+                            onClick={onRefund}
+                            className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 px-3.5 py-2 text-[12px] font-bold text-gray-600 transition-colors hover:border-[#FF3B30] hover:text-[#FF3B30] dark:border-gray-700 dark:text-gray-300"
+                        >
+                            <RotateCcw size={12} />
+                            Refund
+                        </button>
+                    )}
+                    {payment.status === PaymentStatus.RefundPending && (
+                        <span className="text-[11px] font-semibold text-purple-600 dark:text-purple-400">
+                            awaiting provider
+                        </span>
+                    )}
+                </td>
             </tr>
 
             {/* The reason lives on its own row so it can be read in full rather than truncated. */}
             {isFlagged && payment.flagNote && (
                 <tr className="bg-amber-50/50 dark:bg-amber-900/5">
-                    <td colSpan={6} className="px-5 pb-4 pt-0">
+                    <td colSpan={7} className="px-5 pb-4 pt-0">
                         <p className="text-[12px] leading-relaxed text-amber-800 dark:text-amber-300">
                             <span className="font-bold">Why this is held: </span>
                             {payment.flagNote}
@@ -237,9 +273,35 @@ function PaymentRow({ payment }: { payment: AdminPayment }) {
 
             {payment.status === PaymentStatus.Failed && payment.failureReason && (
                 <tr>
-                    <td colSpan={6} className="px-5 pb-4 pt-0">
+                    <td colSpan={7} className="px-5 pb-4 pt-0">
                         <p className="text-[11px] text-gray-400 dark:text-gray-500">
                             {payment.failureReason}
+                        </p>
+                    </td>
+                </tr>
+            )}
+
+            {/*
+                What went back, why, and how much — which is not always what was
+                charged. Shown on the row rather than hidden behind a detail view,
+                because "why did this money leave" is the question this record
+                exists to answer.
+            */}
+            {payment.refundReason && (
+                <tr className="bg-gray-50/60 dark:bg-gray-900/30">
+                    <td colSpan={7} className="px-5 pb-4 pt-0">
+                        <p className="text-[12px] leading-relaxed text-gray-600 dark:text-gray-400">
+                            <span className="font-bold">
+                                {payment.refundedAt ? "Refunded" : "Refund requested"}
+                                {payment.refundAmountKobo != null && ` ${formatKobo(payment.refundAmountKobo)}`}
+                                {": "}
+                            </span>
+                            {payment.refundReason}
+                            {payment.providerRefundReference && (
+                                <span className="ml-1.5 font-mono text-[11px] text-gray-400">
+                                    (provider {payment.providerRefundReference})
+                                </span>
+                            )}
                         </p>
                     </td>
                 </tr>

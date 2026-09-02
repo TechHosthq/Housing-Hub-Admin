@@ -10,11 +10,10 @@ import {
 /**
  * Payments, for staff.
  *
- * Read-only, and that is a limit of the API rather than of this client. An
- * endpoint that let an admin mark a payment successful would be a way to grant
- * paid services with no money moving, and the row it wrote would be
- * indistinguishable from a genuine settlement. Refunds happen in Paystack's
- * dashboard, against the transaction that actually exists.
+ * Read-only except for refunds, and that is a limit of the API rather than of this
+ * client. An endpoint that let an admin mark a payment successful, unflag one or
+ * edit an amount would each be a way to grant a paid service with no money moving,
+ * and the row it wrote would be indistinguishable from the genuine thing.
  */
 const paymentService = {
     getAll: async (params: {
@@ -50,6 +49,19 @@ const paymentService = {
 
     getByReference: async (reference: string): Promise<AdminPaymentResponse> => {
         const response = await apiClient.get(`/api/AdminPayment/${reference}`);
+        return response.data;
+    },
+
+    /**
+     * Sends a payment back. SuperAdmin only, server-side.
+     *
+     * Note what is not sent: an amount. The figure refunded is whatever the provider
+     * says actually arrived, which on a flagged payment is not what was asked for —
+     * so an admin cannot choose it, and cannot get it wrong. A partial refund goes
+     * through Paystack's own dashboard.
+     */
+    refund: async (reference: string, reason: string): Promise<AdminPaymentResponse> => {
+        const response = await apiClient.post(`/api/AdminPayment/${reference}/refund`, { reason });
         return response.data;
     },
 };

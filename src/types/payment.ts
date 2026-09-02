@@ -27,6 +27,15 @@ export enum PaymentStatus {
      * grouped with either.
      */
     Flagged = 5,
+    /** A refund has been asked of the provider and not yet confirmed. */
+    RefundPending = 6,
+    /**
+     * The provider confirmed the money went back.
+     *
+     * No longer a settled payment — a refunded verification fee stops satisfying
+     * the submission gate, which is why this is a status rather than a flag.
+     */
+    Refunded = 7,
 }
 
 export const PAYMENT_STATUS_LABELS: Record<number, string> = {
@@ -35,6 +44,8 @@ export const PAYMENT_STATUS_LABELS: Record<number, string> = {
     [PaymentStatus.Failed]: 'Failed',
     [PaymentStatus.Abandoned]: 'Abandoned',
     [PaymentStatus.Flagged]: 'Needs checking',
+    [PaymentStatus.RefundPending]: 'Refund in progress',
+    [PaymentStatus.Refunded]: 'Refunded',
 };
 
 export const PAYMENT_PURPOSE_LABELS: Record<number, string> = {
@@ -66,6 +77,22 @@ export interface AdminPayment {
     failureReason: string | null;
     /** Why this needs a person. Set only on a flagged payment. */
     flagNote: string | null;
+
+    /** Why the money was sent back. */
+    refundReason: string | null;
+    /** Which admin asked for it. */
+    refundedByAdminId: string | null;
+    refundRequestedAt: string | null;
+    refundedAt: string | null;
+    /**
+     * What actually went back, in kobo.
+     *
+     * Not necessarily amountKobo. A flagged payment is flagged because the
+     * confirmed amount differed from the amount asked for, and the refund follows
+     * what arrived.
+     */
+    refundAmountKobo: number | null;
+    providerRefundReference: string | null;
 }
 
 export type AdminPaymentResponse = ApiResponse<AdminPayment>;

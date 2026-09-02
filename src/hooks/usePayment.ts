@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import paymentService from '@/services/paymentService';
 import { PaymentStatus } from '@/types/payment';
 
@@ -13,6 +13,8 @@ import { PaymentStatus } from '@/types/payment';
 const FLAGGED_COUNT_REFRESH_MS = 60_000;
 
 export const usePayment = () => {
+    const queryClient = useQueryClient();
+
     const usePaymentList = (params: {
         pageNumber?: number;
         pageSize?: number;
@@ -39,10 +41,26 @@ export const usePayment = () => {
         enabled: !!reference,
     });
 
+    const refundMutation = useMutation({
+        mutationFn: ({ reference, reason }: { reference: string; reason: string }) =>
+            paymentService.refund(reference, reason),
+        // Every list is invalidated rather than patched. A refund changes the
+        // payment's status, and a refunded flagged payment also leaves the flagged
+        // queue and the navbar count — reconstructing all of that client-side is
+        // how the badge ends up disagreeing with the list.
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-payments'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-payments-flagged'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-payments-flagged-count'] });
+        },
+    });
+
     return {
         usePaymentList,
         useFlaggedPayments,
         useFlaggedCount,
         usePaymentByReference,
+        refundPayment: refundMutation.mutateAsync,
+        isRefunding: refundMutation.isPending,
     };
 };
