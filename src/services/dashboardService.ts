@@ -11,6 +11,18 @@ export interface AdminDashboardStats {
     todaysInspections: number;
 }
 
+/** The subset of an inspection the dashboard's "today" list renders. */
+export interface DashboardInspection {
+    id: string;
+    inspectionId: string;
+    scheduledDate: string;
+    scheduledTime: string;
+    status: number;
+    propertyName: string | null;
+    propertyAddress: string | null;
+    customerName: string | null;
+}
+
 export interface AdminRecentActivity {
     type: string | null;
     description: string | null;
@@ -35,7 +47,7 @@ const dashboardService = {
         return response.data?.data ?? response.data;
     },
 
-    getTodaysInspections: async (pageNumber = 1, pageSize = 10): Promise<PaginatedResult<any>> => {
+    getTodaysInspections: async (pageNumber = 1, pageSize = 10): Promise<PaginatedResult<DashboardInspection>> => {
         const response = await apiClient.get('/api/AdminDashboard/inspections/today', {
             params: { pageNumber, pageSize }
         });

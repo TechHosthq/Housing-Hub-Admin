@@ -113,7 +113,7 @@ export default function AdminDashboard() {
             {/* Today's Inspections Section */}
             <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-[24px] font-bold text-[#1A1A1A] font-montserrat">Today's Inspections</h2>
+                    <h2 className="text-[24px] font-bold text-[#1A1A1A] font-montserrat">Today&apos;s Inspections</h2>
                     <Link
                         href="/admin/inspections"
                         className="text-[14px] font-bold text-[#0095FF] hover:underline"
@@ -132,7 +132,7 @@ export default function AdminDashboard() {
                     </div>
                 ) : (
                     <div className="flex flex-col gap-4">
-                        {paginatedInspections.map((item: any) => {
+                        {paginatedInspections.map((item) => {
                             const statusColor = STATUS_COLORS[item.status] ?? "bg-gray-100 text-gray-500";
                             const statusLabel = STATUS_LABELS[item.status] ?? "Unknown";
                             const scheduledDate = item.scheduledDate
@@ -227,7 +227,7 @@ export default function AdminDashboard() {
                 ) : (
                     <div className="bg-white border border-gray-100 rounded-[20px] overflow-hidden shadow-sm flex flex-col">
                         <div className="divide-y divide-gray-100">
-                            {paginatedActivities.map((activity: any, i: number) => (
+                            {paginatedActivities.map((activity, i: number) => (
                                 <div
                                     key={i}
                                     className="px-8 py-5 flex items-center gap-4 hover:bg-gray-50/50 transition-colors"

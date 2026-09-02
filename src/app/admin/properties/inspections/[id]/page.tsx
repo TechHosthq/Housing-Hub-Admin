@@ -139,7 +139,7 @@ export default function InspectionDetailsPage() {
                 </div>
                 <div className="flex flex-col gap-2">
                     <h2 className="text-[22px] font-black text-[#1A1A1A] font-montserrat">Inspection Not Found</h2>
-                    <p className="text-gray-400 font-medium">We couldn't retrieve the details for this inspection.</p>
+                    <p className="text-gray-400 font-medium">We couldn&apos;t retrieve the details for this inspection.</p>
                 </div>
                 <button
                     onClick={() => router.back()}
@@ -339,7 +339,7 @@ export default function InspectionDetailsPage() {
             <div className="bg-white border border-gray-100 rounded-[20px] p-8 shadow-sm flex flex-col gap-4">
                 <div className="flex items-center gap-2 text-[#1A1A1A]">
                     <FileText size={20} className="text-[#0095FF]" />
-                    <h3 className="text-[18px] font-bold">Renter's Booking Note</h3>
+                    <h3 className="text-[18px] font-bold">Renter&apos;s Booking Note</h3>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
                     <p className="text-gray-600 text-[15px] font-medium leading-relaxed italic">
@@ -352,7 +352,7 @@ export default function InspectionDetailsPage() {
                         <span className="text-[14px] font-bold text-red-500">Decline Reason</span>
                         <div className="bg-red-50/50 rounded-xl p-5 border border-red-100">
                             <p className="text-red-700 text-[15px] font-medium leading-relaxed italic">
-                                "{inspection.declineNote}"
+                                &ldquo;{inspection.declineNote}&rdquo;
                             </p>
                         </div>
                     </div>
