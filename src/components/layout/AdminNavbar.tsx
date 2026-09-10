@@ -6,10 +6,17 @@ import { Bell, ChevronDown, LayoutDashboard, Building2, Users, ClipboardList, Me
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import UserDropdown from "./UserDropdown";
+import { usePayment } from "@/hooks/usePayment";
 
 export default function AdminNavbar() {
     const pathname = usePathname();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    // Polled here rather than only on the payments page, so an admin working
+    // anywhere in the app finds out that somebody has paid and received nothing.
+    const { useFlaggedCount } = usePayment();
+    const { data: flaggedResponse } = useFlaggedCount();
+    const flaggedPaymentCount = flaggedResponse?.data ?? 0;
 
     const isActive = (path: string) => pathname === path || pathname.startsWith(`${path}/`);
 
@@ -59,6 +66,22 @@ export default function AdminNavbar() {
                         className={`${isActive("/admin/verification") ? "text-[#0095FF]" : "text-[#1A1A1A]"} font-medium text-[14px] hover:text-[#0095FF] transition-colors`}
                     >
                         Verification
+                    </Link>
+                    {/*
+                        Carries a count badge, because a flagged payment is the one
+                        thing in this app where nobody noticing costs a customer
+                        money — they have paid and received nothing.
+                    */}
+                    <Link
+                        href="/admin/payments"
+                        className={`${isActive("/admin/payments") ? "text-[#0095FF]" : "text-[#1A1A1A]"} font-medium text-[14px] hover:text-[#0095FF] transition-colors flex items-center gap-1.5`}
+                    >
+                        Payments
+                        {flaggedPaymentCount > 0 && (
+                            <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-black text-amber-700">
+                                {flaggedPaymentCount}
+                            </span>
+                        )}
                     </Link>
                     <Link
                         href="/admin/messages"
