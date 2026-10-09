@@ -84,6 +84,12 @@ export default function AdminNavbar() {
                         )}
                     </Link>
                     <Link
+                        href="/admin/tenancies"
+                        className={`${isActive("/admin/tenancies") ? "text-[#0095FF]" : "text-[#1A1A1A]"} font-medium text-[14px] hover:text-[#0095FF] transition-colors`}
+                    >
+                        Tenancies
+                    </Link>
+                    <Link
                         href="/admin/messages"
                         className={`${isActive("/admin/messages") ? "text-[#0095FF]" : "text-[#1A1A1A]"} font-medium text-[14px] hover:text-[#0095FF] transition-colors`}
                     >
