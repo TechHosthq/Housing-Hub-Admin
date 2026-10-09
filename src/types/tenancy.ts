@@ -55,6 +55,14 @@ export const DOCUMENT_MODE_LABELS: Record<number, string> = {
     [TenancyDocumentMode.SignOffline]: 'Signed on paper',
 };
 
+/** Must match HousingHub.Model.Enums.TenancyDocumentFile exactly. */
+export enum TenancyDocumentFile {
+    Source = 1,
+    Submitted = 2,
+    /** The stamped PDF, made when the tenant signed in the app. */
+    Signed = 3,
+}
+
 export enum TenancyDocumentStatus {
     Requested = 1,
     Submitted = 2,
@@ -125,6 +133,8 @@ export interface AdminTenancyDocument {
     status: TenancyDocumentStatus;
     hasSourceFile: boolean;
     hasSubmittedFile: boolean;
+    /** Whether a stamped PDF was produced. Absent on some valid signatures. */
+    hasSignedPdf: boolean;
     submittedAt: string | null;
     reviewedAt: string | null;
     rejectionReason: string | null;

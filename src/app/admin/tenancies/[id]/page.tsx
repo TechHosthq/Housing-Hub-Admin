@@ -4,7 +4,7 @@ import { use, useState } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import {
-    ArrowLeft, Eye, Loader2, PenLine, ShieldAlert, ShieldCheck,
+    ArrowLeft, Download, Eye, Loader2, PenLine, ShieldAlert, ShieldCheck,
 } from "lucide-react";
 import { useTenancy } from "@/hooks/useTenancy";
 import { useToastStore } from "@/store/useToastStore";
@@ -15,6 +15,7 @@ import {
     DOCUMENT_STATUS_LABELS,
     LEASE_TYPE_LABELS,
     TENANCY_STATUS_LABELS,
+    TenancyDocumentFile,
     TenancyDocumentStatus,
 } from "@/types/tenancy";
 import { formatKobo } from "@/utils/money";
@@ -225,13 +226,13 @@ function DocumentCard({ tenancyId, document }: { tenancyId: string; document: Ad
      * Opening it after the await is what a popup blocker stops — the click is no
      * longer the thing that caused it.
      */
-    const open = async (submitted: boolean) => {
+    const open = async (file: TenancyDocumentFile) => {
         const tab = window.open("", "_blank");
         if (tab) tab.opener = null;
 
         setOpening(true);
         try {
-            const result = await fetchDocumentUrl(tenancyId, document.id, submitted);
+            const result = await fetchDocumentUrl(tenancyId, document.id, file);
 
             if (result.isSuccessful && result.data) {
                 if (tab) tab.location.href = result.data;
@@ -326,12 +327,12 @@ function DocumentCard({ tenancyId, document }: { tenancyId: string; document: Ad
                 </div>
             )}
 
-            {(document.hasSourceFile || document.hasSubmittedFile) && (
+            {(document.hasSourceFile || document.hasSubmittedFile || document.hasSignedPdf) && (
                 <div className="mt-4 flex flex-wrap items-center gap-4">
                     {document.hasSourceFile && (
                         <button
                             type="button"
-                            onClick={() => open(false)}
+                            onClick={() => open(TenancyDocumentFile.Source)}
                             disabled={opening}
                             className="flex items-center gap-1.5 text-[12px] font-bold text-[#0095FF] hover:underline disabled:opacity-40"
                         >
@@ -342,12 +343,28 @@ function DocumentCard({ tenancyId, document }: { tenancyId: string; document: Ad
                     {document.hasSubmittedFile && (
                         <button
                             type="button"
-                            onClick={() => open(true)}
+                            onClick={() => open(TenancyDocumentFile.Submitted)}
                             disabled={opening}
                             className="flex items-center gap-1.5 text-[12px] font-bold text-[#0095FF] hover:underline disabled:opacity-40"
                         >
                             {opening ? <Loader2 size={13} className="animate-spin" /> : <Eye size={13} />}
                             What the tenant sent
+                        </button>
+                    )}
+                    {/*
+                        The one to reach for in a dispute: the signature is on its
+                        face and the certificate behind it names the time, the
+                        address and the hash.
+                    */}
+                    {document.hasSignedPdf && (
+                        <button
+                            type="button"
+                            onClick={() => open(TenancyDocumentFile.Signed)}
+                            disabled={opening}
+                            className="flex items-center gap-1.5 text-[12px] font-bold text-[#0095FF] hover:underline disabled:opacity-40"
+                        >
+                            {opening ? <Loader2 size={13} className="animate-spin" /> : <Download size={13} />}
+                            The stamped copy
                         </button>
                     )}
                     <span className="text-[11px] text-gray-400">

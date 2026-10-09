@@ -3,6 +3,7 @@ import { ApiResponse } from '@/types/auth';
 import {
     AdminTenancyDetailResponse,
     PaginatedAdminTenanciesResponse,
+    TenancyDocumentFile,
     TenancyStatus,
 } from '@/types/tenancy';
 
@@ -45,11 +46,11 @@ const tenancyService = {
      * logs each one.
      */
     getDocumentUrl: async (
-        tenancyId: string, documentId: string, submitted: boolean,
+        tenancyId: string, documentId: string, file: TenancyDocumentFile,
     ): Promise<ApiResponse<string>> => {
         const response = await apiClient.get(
             `/api/AdminTenancy/${tenancyId}/documents/${documentId}/url`,
-            { params: { submitted } },
+            { params: { file } },
         );
         return response.data;
     },
