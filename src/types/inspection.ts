@@ -6,7 +6,14 @@ export enum InspectionStatus {
     Declined = 2,
     RescheduleRequested = 3,
     Completed = 4,
-    Cancelled = 5
+    Cancelled = 5,
+    /**
+     * The renter was asked whether the viewing happened and never answered.
+     *
+     * Not a refusal by either party — nobody decided anything, which is why it
+     * reads grey rather than red. Terminal: going ahead means booking again.
+     */
+    Expired = 6
 }
 
 export interface Inspection {
@@ -35,6 +42,10 @@ export interface Inspection {
     handedOffAt?: string | null;
     assignedStaffId?: string | null;
     assignedStaffName?: string | null;
+    /** When the renter confirmed the viewing happened. */
+    completedAt?: string | null;
+    /** What the renter said about it. The only written account of the viewing. */
+    completionComment?: string | null;
 }
 
 export interface CreateInspectionRequest {

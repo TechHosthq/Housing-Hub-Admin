@@ -16,6 +16,7 @@ const statusLabels: Record<InspectionStatus, string> = {
     [InspectionStatus.Pending]: "Pending",
     [InspectionStatus.Confirmed]: "Confirmed",
     [InspectionStatus.Completed]: "Completed",
+    [InspectionStatus.Expired]: "Closed, never confirmed",
     [InspectionStatus.Cancelled]: "Cancelled",
     [InspectionStatus.Declined]: "Declined",
     [InspectionStatus.RescheduleRequested]: "Reschedule Requested",
@@ -25,6 +26,8 @@ const statusColors: Record<InspectionStatus, string> = {
     [InspectionStatus.Pending]: "bg-orange-50 text-orange-600",
     [InspectionStatus.Confirmed]: "bg-blue-50 text-[#0095FF]",
     [InspectionStatus.Completed]: "bg-green-50 text-green-600",
+    // Grey: nobody refused anything, the question just went unanswered.
+    [InspectionStatus.Expired]: "bg-gray-100 text-gray-500",
     [InspectionStatus.Cancelled]: "bg-red-50 text-red-500",
     [InspectionStatus.Declined]: "bg-red-50 text-red-500",
     [InspectionStatus.RescheduleRequested]: "bg-purple-50 text-purple-600",
@@ -346,6 +349,22 @@ export default function InspectionDetailsPage() {
                         {inspection.note ? `"${inspection.note}"` : "No special instructions or note provided by the renter."}
                     </p>
                 </div>
+
+                {/*
+                    The renter's own account of the viewing, and the only one anybody
+                    writes down. It is what tells staff whether "completed" meant they
+                    walked the flat or stood outside a locked gate.
+                */}
+                {inspection.completionComment && (
+                    <div className="mt-4 flex flex-col gap-2">
+                        <span className="text-[14px] font-bold text-[#0095FF]">What the renter said about the viewing</span>
+                        <div className="bg-blue-50/50 rounded-xl p-5 border border-blue-100">
+                            <p className="text-[#1A1A1A] text-[15px] font-medium leading-relaxed italic">
+                                &ldquo;{inspection.completionComment}&rdquo;
+                            </p>
+                        </div>
+                    </div>
+                )}
 
                 {inspection.declineNote && (
                     <div className="mt-4 flex flex-col gap-2">
