@@ -19,6 +19,7 @@ import {
     TenancyDocumentStatus,
 } from "@/types/tenancy";
 import { formatKobo } from "@/utils/money";
+import { PAYMENT_STATUS_LABELS, PaymentStatus } from "@/types/payment";
 import { resolveApiError } from "@/utils/errorResolver";
 
 const DOCUMENT_STATUS_STYLES: Record<number, string> = {
@@ -102,6 +103,117 @@ export default function AdminTenancyDetailPage({ params }: { params: Promise<{ i
             <div className="grid gap-6 lg:grid-cols-2">
                 <Parties tenancy={tenancy} />
                 <Money tenancy={tenancy} fees={fees} />
+            </div>
+
+            {/*
+                Everyone in the running, not only the person chosen. A complaint
+                about a letting decision is a complaint about who else there was,
+                and the selected row alone answers a different question.
+            */}
+            <div className="mt-6 rounded-[18px] border border-gray-100 p-6 dark:border-gray-800">
+                <h2 className="text-[15px] font-black text-[#1A1A1A] dark:text-gray-100">
+                    Who viewed this property
+                </h2>
+                <p className="mt-1 text-[12px] text-gray-400">
+                    {detail.candidates.length === 0
+                        ? "No completed viewings on record."
+                        : `${detail.candidates.length} completed viewing${detail.candidates.length === 1 ? "" : "s"}, of which the owner chose one.`}
+                </p>
+
+                <div className="mt-5 space-y-3">
+                    {detail.candidates.map((candidate) => (
+                        <div
+                            key={candidate.inspectionId}
+                            className={`rounded-[16px] border p-5 ${candidate.wasChosen
+                                ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/40 dark:bg-emerald-950/20"
+                                : "border-gray-100 dark:border-gray-800"}`}
+                        >
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                    <Link
+                                        href={`/admin/customers/${candidate.customerId}`}
+                                        className="text-[13px] font-bold text-[#1A1A1A] hover:text-[#0095FF] dark:text-gray-100"
+                                    >
+                                        {candidate.name || "—"}
+                                    </Link>
+                                    <span className="mt-0.5 block text-[11px] text-gray-400">
+                                        {candidate.email || "—"} · viewed{" "}
+                                        {format(new Date(candidate.inspectedOn), "d MMM yyyy")}
+                                        {candidate.confirmedByRenterAt
+                                            && ` · confirmed ${format(new Date(candidate.confirmedByRenterAt), "d MMM yyyy")}`}
+                                    </span>
+                                </div>
+
+                                {candidate.wasChosen && (
+                                    <span className="shrink-0 rounded-full bg-emerald-600 px-2.5 py-1 text-[11px] font-bold text-white">
+                                        Chosen
+                                    </span>
+                                )}
+                            </div>
+
+                            {candidate.renterComment && (
+                                <p className="mt-3 text-[11px] italic leading-relaxed text-gray-500 dark:text-gray-400">
+                                    &ldquo;{candidate.renterComment}&rdquo;
+                                </p>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="mt-6 rounded-[18px] border border-gray-100 p-6 dark:border-gray-800">
+                <h2 className="text-[15px] font-black text-[#1A1A1A] dark:text-gray-100">
+                    Payments
+                </h2>
+                <p className="mt-1 text-[12px] text-gray-400">
+                    {detail.payments.length === 0
+                        ? "Nothing has been charged against this tenancy."
+                        : "What the tenant was charged, and how it divided."}
+                </p>
+
+                <div className="mt-5 space-y-3">
+                    {detail.payments.map((payment) => (
+                        <div key={payment.id} className="rounded-[16px] border border-gray-100 p-5 dark:border-gray-800">
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                    <p className="font-mono text-[12px] font-bold text-[#1A1A1A] dark:text-gray-100">
+                                        {payment.reference}
+                                    </p>
+                                    <p className="mt-0.5 text-[11px] text-gray-400">
+                                        {payment.paidAt
+                                            ? `Paid ${format(new Date(payment.paidAt), "d MMM yyyy, HH:mm")}`
+                                            : `Started ${format(new Date(payment.dateCreated), "d MMM yyyy")}`}
+                                    </p>
+                                </div>
+                                <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ${PAYMENT_STATUS_STYLES[payment.status] ?? "bg-gray-100 text-gray-600"}`}>
+                                    {PAYMENT_STATUS_LABELS[payment.status] ?? "—"}
+                                </span>
+                            </div>
+
+                            {/*
+                                The division matters more than the total: most of it
+                                was never ours, and a report that reads gross as
+                                revenue is wrong by the size of the rent.
+                            */}
+                            <dl className="mt-4 grid gap-3 text-[12px] sm:grid-cols-3">
+                                <Split label="Charged" amountKobo={payment.amountKobo} />
+                                <Split label="To the owner" amountKobo={payment.paidToOwnerKobo} />
+                                <Split
+                                    label="We kept"
+                                    amountKobo={payment.platformChargeKobo ?? payment.amountKobo}
+                                />
+                            </dl>
+
+                            {payment.refundedAt && (
+                                <p className="mt-3 rounded-xl bg-purple-50 px-4 py-3 text-[11px] leading-relaxed text-purple-800 dark:bg-purple-950/30 dark:text-purple-300">
+                                    Refunded {format(new Date(payment.refundedAt), "d MMM yyyy")}
+                                    {payment.refundAmountKobo != null && ` · ${formatKobo(payment.refundAmountKobo)}`}
+                                    {payment.refundReason && ` — ${payment.refundReason}`}
+                                </p>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
 
             <div className="mt-6 rounded-[18px] border border-gray-100 p-6 dark:border-gray-800">
@@ -372,6 +484,27 @@ function DocumentCard({ tenancyId, document }: { tenancyId: string; document: Ad
                     </span>
                 </div>
             )}
+        </div>
+    );
+}
+
+const PAYMENT_STATUS_STYLES: Record<number, string> = {
+    [PaymentStatus.Successful]: "bg-emerald-50 text-emerald-700",
+    [PaymentStatus.Pending]: "bg-blue-50 text-blue-600",
+    [PaymentStatus.Failed]: "bg-gray-100 text-gray-600",
+    [PaymentStatus.Abandoned]: "bg-gray-100 text-gray-600",
+    [PaymentStatus.Flagged]: "bg-amber-50 text-amber-700",
+    [PaymentStatus.RefundPending]: "bg-purple-50 text-purple-700",
+    [PaymentStatus.Refunded]: "bg-gray-100 text-gray-600",
+};
+
+function Split({ label, amountKobo }: { label: string; amountKobo: number }) {
+    return (
+        <div>
+            <dt className="text-gray-400">{label}</dt>
+            <dd className="mt-0.5 font-bold text-[#1A1A1A] dark:text-gray-200">
+                {formatKobo(amountKobo)}
+            </dd>
         </div>
     );
 }

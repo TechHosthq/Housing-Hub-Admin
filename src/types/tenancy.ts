@@ -7,6 +7,7 @@
  */
 
 import { ApiResponse, PaginatedResponse } from './auth';
+import { PaymentStatus } from './payment';
 
 export enum TenancyStatus {
     CandidateSelected = 1,
@@ -157,10 +158,44 @@ export interface AdminTenancyFee {
     amountKobo: number;
 }
 
+/**
+ * Somebody who viewed the property, and whether they were chosen.
+ *
+ * Everyone in the running, not just the person picked — a complaint about a
+ * letting decision is a complaint about who else there was.
+ */
+export interface AdminTenancyCandidate {
+    customerId: string;
+    name: string | null;
+    email: string | null;
+    inspectionId: string;
+    inspectedOn: string;
+    confirmedByRenterAt: string | null;
+    renterComment: string | null;
+    wasChosen: boolean;
+}
+
+export interface AdminTenancyPayment {
+    id: string;
+    reference: string;
+    status: PaymentStatus;
+    amountKobo: number;
+    /** What we kept. The rest went straight to the owner. Null when nothing was split. */
+    platformChargeKobo: number | null;
+    paidToOwnerKobo: number;
+    paidAt: string | null;
+    dateCreated: string;
+    refundReason: string | null;
+    refundedAt: string | null;
+    refundAmountKobo: number | null;
+}
+
 export interface AdminTenancyDetail {
     tenancy: AdminTenancy;
     documents: AdminTenancyDocument[];
     fees: AdminTenancyFee[];
+    candidates: AdminTenancyCandidate[];
+    payments: AdminTenancyPayment[];
 }
 
 export type AdminTenancyDetailResponse = ApiResponse<AdminTenancyDetail>;
