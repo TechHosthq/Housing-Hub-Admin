@@ -12,6 +12,7 @@ const statusLabels: Record<InspectionStatus, string> = {
     [InspectionStatus.Pending]: "Pending",
     [InspectionStatus.Confirmed]: "Confirmed",
     [InspectionStatus.Completed]: "Completed",
+    [InspectionStatus.Expired]: "Closed, never confirmed",
     [InspectionStatus.Cancelled]: "Cancelled",
     [InspectionStatus.Declined]: "Declined",
     [InspectionStatus.RescheduleRequested]: "Reschedule Requested",
@@ -21,6 +22,8 @@ const statusColors: Record<InspectionStatus, string> = {
     [InspectionStatus.Pending]: "bg-orange-50 text-orange-600",
     [InspectionStatus.Confirmed]: "bg-blue-50 text-[#0095FF]",
     [InspectionStatus.Completed]: "bg-green-50 text-green-600",
+    // Grey: nobody refused anything, the question just went unanswered.
+    [InspectionStatus.Expired]: "bg-gray-100 text-gray-500",
     [InspectionStatus.Cancelled]: "bg-red-50 text-red-500",
     [InspectionStatus.Declined]: "bg-red-50 text-red-500",
     [InspectionStatus.RescheduleRequested]: "bg-purple-50 text-purple-600",
